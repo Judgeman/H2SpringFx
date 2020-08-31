@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,9 +24,17 @@ public class H2SpringFxApplication extends Application {
     private LanguageService languageService;
     private ViewService viewService;
 
+    private Exception exceptionOnStartup;
+
     @Override
     public void init() throws Exception {
-        springContext = SpringApplication.run(H2SpringFxApplication.class);
+        try {
+            springContext = SpringApplication.run(H2SpringFxApplication.class);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            exceptionOnStartup = ex;
+            return;
+        }
 
         languageService = springContext.getBean(LanguageService.class);
         viewService = springContext.getBean(ViewService.class);
@@ -38,8 +47,22 @@ public class H2SpringFxApplication extends Application {
         root = fxmlLoader.load();
     }
 
+    private void showStartUpErrorMessage(Exception ex) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ups something went wrong");
+        alert.setHeaderText("Error on loading Application");
+        alert.setContentText(ex.getMessage());
+
+        alert.showAndWait();
+    }
+
     @Override
     public void start(Stage primaryStage) {
+        if (exceptionOnStartup != null) {
+            showStartUpErrorMessage(exceptionOnStartup);
+            return;
+        }
+
         primaryStage.setTitle(languageService.getLocalizationText("applicationTitle"));
         primaryStage.setScene(new Scene(root, ViewService.DEFAULT_WIDTH, ViewService.DEFAULT_HEIGHT));
 
@@ -51,6 +74,8 @@ public class H2SpringFxApplication extends Application {
 
     @Override
     public void stop() {
-        springContext.stop();
+        if (springContext != null) {
+            springContext.stop();
+        }
     }
 }
