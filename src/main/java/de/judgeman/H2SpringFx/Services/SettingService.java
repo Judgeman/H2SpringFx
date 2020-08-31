@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SettingService {
 
+    public static final String LANGUAGE_ENTRY_KEY = "currentLanguage";
+
     @Autowired
     private SettingEntryRepository settingEntryRepository;
 

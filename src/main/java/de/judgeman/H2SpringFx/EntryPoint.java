@@ -16,7 +16,7 @@ public class EntryPoint {
         // tie the console out print to a file
         LogService.tieSystemOutAndErrToFileLogging();
 
-        // Start CamoTool as Spring Boot application with JavaFx
+        // Start as Spring Boot application with JavaFx
         LauncherImpl.launchApplication(H2SpringFxApplication.class, SplashScreen.class, args);
     }
 }

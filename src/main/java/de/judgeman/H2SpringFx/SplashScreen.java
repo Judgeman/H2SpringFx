@@ -1,5 +1,6 @@
 package de.judgeman.H2SpringFx;
 
+import de.judgeman.H2SpringFx.Services.ViewService;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,11 +22,14 @@ public class SplashScreen extends Preloader {
         this.stage = primaryStage;
         stage.initStyle(StageStyle.UNDECORATED);
 
-        URL url = getClass().getResource("/SplashScreen.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader(url);
+        URL viewUrl = getClass().getResource(ViewService.FILE_PATH_SPLASH_SCREEN);
+        URL cssUrl = getClass().getResource(ViewService.FILE_PATH_DEFAULT_STYLE_CSS);
+        FXMLLoader fxmlLoader = new FXMLLoader(viewUrl);
+
         Parent root = fxmlLoader.load();
 
-        Scene scene = new Scene(root, 500, 200);
+        Scene scene = new Scene(root, ViewService.DEFAULT_WIDTH_SPLASH_SCREEN, ViewService.DEFAULT_HEIGHT_SPLASH_SCREEN);
+        scene.getStylesheets().add(cssUrl.toExternalForm());
         stage.setScene(scene);
         stage.show();
     }
