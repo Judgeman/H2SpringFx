@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -66,6 +67,7 @@ public class H2SpringFxApplication extends Application {
         primaryStage.setTitle(languageService.getLocalizationText("applicationTitle"));
         primaryStage.setScene(new Scene(root, ViewService.DEFAULT_WIDTH, ViewService.DEFAULT_HEIGHT));
 
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         viewService.setDefaultStyleCss(primaryStage);
         viewService.restoreScenePositionAndSize(primaryStage);
 

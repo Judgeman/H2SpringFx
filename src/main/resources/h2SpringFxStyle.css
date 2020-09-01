@@ -1,20 +1,36 @@
-.background {
-    -fx-background-color: #FFFFFF;
+
+.header {
+    -fx-background-color: #D9D9D9;
+}
+
+.container {
+    -fx-background-color: #F2F2F2;
+}
+
+.footer {
+    -fx-background-color:#D9D9D9;
 }
 
 .defaultButton {
     -fx-padding: 5 22 5 22;
     -fx-border-width: 0;
     -fx-background-radius: 0;
-    -fx-background-color: #1C86EE;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #BDDBFA;  /* #1C86EE */
+    -fx-text-fill: #000000;         /* #FFF */
     -fx-background-insets: 0 0 0 0, 0, 1, 2;
 }
 
 .defaultButton:hover {
-    -fx-background-color: #1E90FF;
+    -fx-background-color: #80B5EA;  /* #1E90FF */
 }
 
 .defaultButton:pressed {
-    -fx-background-color: #1874CD;
+   /* -fx-background-color: #1874CD; */  /* #1874CD */
+}
+
+.abbrButton {
+    -fx-background-color: #FC8D83;
+}
+.abbrButton:hover {
+    -fx-background-color: #E4685D;
 }

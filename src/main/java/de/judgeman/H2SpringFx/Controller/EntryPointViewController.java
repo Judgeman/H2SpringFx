@@ -4,10 +4,12 @@ import de.judgeman.H2SpringFx.Services.LanguageService;
 import de.judgeman.H2SpringFx.Services.LogService;
 import de.judgeman.H2SpringFx.Services.SettingService;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,6 +37,8 @@ public class EntryPointViewController {
     public TextField valueInput;
     public Button saveButton;
     public Button loadButton;
+    @FXML
+    private Button abbr;
 
     @FXML
     public void initialize() {
@@ -97,5 +101,10 @@ public class EntryPointViewController {
         setLanguageLabel.setText(languageService.getLocalizationText("setLanguage"));
 
         logger.info("Updated text properties with new localization");
+    }
+
+    public void abbrechen(ActionEvent event) {
+        Stage stage = (Stage) abbr.getScene().getWindow();
+        stage.close();
     }
 }

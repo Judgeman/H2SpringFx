@@ -17,8 +17,8 @@ public class ViewService {
     public static final double DEFAULT_WIDTH = 800;
     public static final double DEFAULT_HEIGHT = 600;
 
-    public static final double DEFAULT_WIDTH_SPLASH_SCREEN = 500;
-    public static final double DEFAULT_HEIGHT_SPLASH_SCREEN = 200;
+    public static final double DEFAULT_WIDTH_SPLASH_SCREEN = 600;
+    public static final double DEFAULT_HEIGHT_SPLASH_SCREEN = 350;
 
     @Autowired
     private SettingService settingService;

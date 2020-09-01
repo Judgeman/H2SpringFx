@@ -5,22 +5,21 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" onContextMenuRequested="#ShowContextMenuOnEmptySpace" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.judgeman.H2SpringFx.Controller.EntryPointViewController">
+<AnchorPane fx:id="anchorPane" onContextMenuRequested="#ShowContextMenuOnEmptySpace" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.judgeman.H2SpringFx.Controller.EntryPointViewController">
    <children>
       <BorderPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="background" BorderPane.alignment="CENTER">
+            <VBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" styleClass="header" stylesheets="@h2SpringFxStyle.css" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" text="%overviewTitle">
+                  <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" text="%overviewTitle" textFill="#060486">
                      <font>
                         <Font size="30.0" />
                      </font>
@@ -28,33 +27,8 @@
                </children>
             </VBox>
          </top>
-         <center>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <children>
-                  <GridPane alignment="CENTER" prefHeight="100.0" prefWidth="392.0">
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="192.0" minWidth="10.0" prefWidth="192.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="126.0" minWidth="10.0" prefWidth="20.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="225.0" minWidth="10.0" prefWidth="180.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints />
-                      <RowConstraints maxHeight="37.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="21.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints maxHeight="21.0" minHeight="0.0" prefHeight="21.0" valignment="CENTER" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <TextField fx:id="valueInput" />
-                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveValue" styleClass="defaultButton" text="%saveValue" GridPane.columnIndex="2" />
-                        <Button fx:id="loadButton" mnemonicParsing="false" onAction="#loadSavedValue" styleClass="defaultButton" text="%loadSavedValue" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                        <Label fx:id="settingLabel" textOverrun="CLIP" wrapText="true" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-                     </children>
-                  </GridPane>
-               </children>
-            </HBox>
-         </center>
          <bottom>
-            <VBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="600.0" BorderPane.alignment="TOP_LEFT">
+            <VBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="600.0" styleClass="footer" stylesheets="@h2SpringFxStyle.css" BorderPane.alignment="TOP_LEFT">
                <children>
                   <HBox alignment="CENTER_RIGHT" spacing="10.0">
                      <children>
@@ -74,6 +48,42 @@
                </opaqueInsets>
             </VBox>
          </bottom>
+         <center>
+            <AnchorPane prefHeight="300.0" prefWidth="600.0" styleClass="container" stylesheets="@h2SpringFxStyle.css" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fitHeight="225.0" fitWidth="300.0" layoutX="250.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@img/sam.jpg" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="settingLabel" layoutX="250.0" layoutY="258.0" prefHeight="40.0" prefWidth="300.0" styleClass="textLabel" stylesheets="@h2SpringFxStyle.css" textOverrun="CLIP" wrapText="true">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="valueInput" layoutX="250.0" layoutY="321.0" prefHeight="40.0" prefWidth="300.0">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </TextField>
+                  <Button fx:id="saveButton" layoutX="250.0" layoutY="379.0" mnemonicParsing="false" onAction="#saveValue" prefHeight="40.0" prefWidth="140.0" styleClass="defaultButton" stylesheets="@h2SpringFxStyle.css" text="%saveValue">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="loadButton" layoutX="410.0" layoutY="379.0" mnemonicParsing="false" onAction="#loadSavedValue" prefHeight="40.0" prefWidth="140.0" styleClass="defaultButton" stylesheets="@h2SpringFxStyle.css" text="%loadSavedValue">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="abbr" layoutX="250.0" layoutY="437.0" mnemonicParsing="false" onAction="#abbrechen" prefHeight="40.0" prefWidth="300.0" styleClass="abbrButton" stylesheets="@h2SpringFxStyle.css" text="Abbrechen" textFill="#5d0a0a">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+               </children>
+            </AnchorPane>
+         </center>
       </BorderPane>
    </children>
 </AnchorPane>
