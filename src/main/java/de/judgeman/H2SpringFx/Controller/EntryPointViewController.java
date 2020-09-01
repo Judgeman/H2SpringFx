@@ -53,7 +53,7 @@ public class EntryPointViewController {
 
     public void ShowContextMenuOnEmptySpace(ContextMenuEvent event) {
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setImpl_showRelativeToWindow(true);
+        //contextMenu.setImpl_showRelativeToWindow(true);
 
         MenuItem item1 = new MenuItem("Menu Item 1");
         contextMenu.getItems().add(item1);
