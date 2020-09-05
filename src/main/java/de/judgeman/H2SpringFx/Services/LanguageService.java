@@ -1,6 +1,5 @@
 package de.judgeman.H2SpringFx.Services;
 
-import javafx.fxml.FXMLLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +11,14 @@ import java.util.ResourceBundle;
 public class LanguageService {
 
     public final static Locale defaultLanguage = Locale.GERMANY;
-    private final String LOCALIZATION_BUNDLE_NAME = "localization";
+    public final static String LOCALIZATION_BUNDLE_NAME = "localization";
 
     @Autowired
     private SettingService settingService;
 
-    private FXMLLoader fxmlLoader;
-
     private final ArrayList<Locale> languages;
+
+    private ResourceBundle currentUsedResourceBundle;
 
     public LanguageService() {
         languages = createAvailableLanguageList();
@@ -34,25 +33,15 @@ public class LanguageService {
     }
 
     public void setNewLanguage(Locale locale) {
-        checkForRegisteredFXMLLoader();
-        setNewResourceBundle(getLocalizationResourceBundle(locale));
+        setCurrentUsedResourceBundle(getLocalizationResourceBundle(locale));
     }
 
     public String getLocalizationText(String key) {
-        return fxmlLoader.getResources().getString(key);
-    }
-
-    public void registerFXMLLoader(FXMLLoader fxmlLoaderToRegister) {
-        fxmlLoader = fxmlLoaderToRegister;
-    }
-
-    public void restoreLastUsedOrDefaultResourceBundle() {
-        checkForRegisteredFXMLLoader();
-        fxmlLoader.setResources(getLocalizationResourceBundle(getLastUsedOrDefaultLanguage()));
+        return currentUsedResourceBundle.getString(key);
     }
 
     public Locale getLastUsedOrDefaultLanguage() {
-        String language = settingService.LoadSetting(SettingService.LANGUAGE_ENTRY_KEY);
+        String language = settingService.loadSetting(SettingService.LANGUAGE_ENTRY_KEY);
         if (language == null) {
             return getDefaultLanguage();
         }
@@ -66,7 +55,7 @@ public class LanguageService {
     }
 
     public void saveNewLanguageSetting(Locale newLanguage) {
-        settingService.SaveSetting(SettingService.LANGUAGE_ENTRY_KEY, newLanguage.toLanguageTag());
+        settingService.saveSetting(SettingService.LANGUAGE_ENTRY_KEY, newLanguage.toLanguageTag());
     }
 
     private ArrayList<Locale> createAvailableLanguageList() {
@@ -78,17 +67,23 @@ public class LanguageService {
         return languages;
     }
 
-    private void setNewResourceBundle(ResourceBundle newResourceBundle) {
-        fxmlLoader.setResources(newResourceBundle);
-    }
-
-    private void checkForRegisteredFXMLLoader() {
-        if (fxmlLoader == null) {
-            throw new UnsupportedOperationException("FXMLLoader must be register first!");
-        }
-    }
-
     private ResourceBundle getLocalizationResourceBundle(Locale locale) {
         return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, locale);
+    }
+
+    public ResourceBundle getCurrentUsedResourceBundle() {
+        if (currentUsedResourceBundle == null) {
+            setCurrentUsedResourceBundle(getDefaultResourceBundle());
+        }
+
+        return currentUsedResourceBundle;
+    }
+
+    private ResourceBundle getDefaultResourceBundle() {
+        return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, getLastUsedOrDefaultLanguage());
+    }
+
+    public void setCurrentUsedResourceBundle(ResourceBundle currentUsedResourceBundle) {
+        this.currentUsedResourceBundle = currentUsedResourceBundle;
     }
 }

@@ -1,5 +1,6 @@
 package de.judgeman.H2SpringFx;
 
+import de.judgeman.H2SpringFx.Services.LanguageService;
 import de.judgeman.H2SpringFx.Services.ViewService;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +10,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * Created by Paul Richter on Mon 30/03/2020
@@ -25,6 +27,7 @@ public class SplashScreen extends Preloader {
         URL viewUrl = getClass().getResource(ViewService.FILE_PATH_SPLASH_SCREEN);
         URL cssUrl = getClass().getResource(ViewService.FILE_PATH_DEFAULT_STYLE_CSS);
         FXMLLoader fxmlLoader = new FXMLLoader(viewUrl);
+        fxmlLoader.setResources(ResourceBundle.getBundle(LanguageService.LOCALIZATION_BUNDLE_NAME, LanguageService.defaultLanguage));
 
         Parent root = fxmlLoader.load();
 

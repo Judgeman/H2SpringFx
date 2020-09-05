@@ -1,4 +1,4 @@
-package de.judgeman.H2SpringFx.Controller;
+package de.judgeman.H2SpringFx.ViewControllers;
 
 import de.judgeman.H2SpringFx.Services.LanguageService;
 import de.judgeman.H2SpringFx.Services.LogService;
@@ -27,14 +27,22 @@ public class EntryPointViewController {
     @Autowired
     private LanguageService languageService;
 
-    public AnchorPane anchorPane;
-    public ComboBox<Locale> languageComboBox;
-    public Label titleLabel;
-    public Label settingLabel;
-    public Label setLanguageLabel;
-    public TextField valueInput;
-    public Button saveButton;
-    public Button loadButton;
+    @FXML
+    private AnchorPane anchorPane;
+    @FXML
+    private ComboBox<Locale> languageComboBox;
+    @FXML
+    private Label titleLabel;
+    @FXML
+    private Label settingLabel;
+    @FXML
+    private Label setLanguageLabel;
+    @FXML
+    private TextField valueInput;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button loadButton;
 
     @FXML
     public void initialize() {
@@ -64,14 +72,14 @@ public class EntryPointViewController {
     public void saveValue() {
         String value = valueInput.getText();
 
-        settingService.SaveSetting("TestSettingEntry", value);
+        settingService.saveSetting("TestSettingEntry", value);
         settingLabel.setText(String.format(languageService.getLocalizationText("savedValue"), value));
 
         logger.info(String.format("Saved value: %s", value));
     }
 
     public void loadSavedValue() {
-        String testSettingValue = settingService.LoadSetting("TestSettingEntry");
+        String testSettingValue = settingService.loadSetting("TestSettingEntry");
         logger.info(String.format("Loaded value: %s", testSettingValue));
 
         settingLabel.setText(String.format(languageService.getLocalizationText("loadedValue"), testSettingValue));

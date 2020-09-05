@@ -16,7 +16,7 @@ public class SettingService {
     @Autowired
     private SettingEntryRepository settingEntryRepository;
 
-    public void SaveSetting(String key, String value) {
+    public void saveSetting(String key, String value) {
         SettingEntry settingEntry = settingEntryRepository.findById(key).orElse(null);
 
         if(settingEntry == null) {
@@ -28,7 +28,7 @@ public class SettingService {
         settingEntryRepository.save(settingEntry);
     }
 
-    public String LoadSetting(String key) {
+    public String loadSetting(String key) {
         SettingEntry settingEntry = settingEntryRepository.findById(key).orElse(null);
 
         if(settingEntry == null) {
@@ -36,5 +36,16 @@ public class SettingService {
         }
 
         return settingEntry.getValue();
+    }
+
+    public boolean deleteSetting(String key) {
+        SettingEntry settingEntry = settingEntryRepository.findById(key).orElse(null);
+
+        if(settingEntry != null) {
+            settingEntryRepository.delete(settingEntry);
+            return true;
+        }
+
+        return false;
     }
 }

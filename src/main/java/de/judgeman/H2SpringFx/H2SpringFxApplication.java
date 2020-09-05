@@ -3,7 +3,6 @@ package de.judgeman.H2SpringFx;
 import de.judgeman.H2SpringFx.Services.LanguageService;
 import de.judgeman.H2SpringFx.Services.ViewService;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -39,12 +38,7 @@ public class H2SpringFxApplication extends Application {
         languageService = springContext.getBean(LanguageService.class);
         viewService = springContext.getBean(ViewService.class);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(viewService.GetUrlForView(ViewService.FILE_PATH_ENTRY_POINT));
-        languageService.registerFXMLLoader(fxmlLoader);
-        languageService.restoreLastUsedOrDefaultResourceBundle();
-        fxmlLoader.setControllerFactory(springContext::getBean);
-
-        root = fxmlLoader.load();
+        root = viewService.getRootElementFromFXML(ViewService.FILE_PATH_ENTRY_POINT);
     }
 
     private void showStartUpErrorMessage(Exception ex) {
@@ -66,6 +60,7 @@ public class H2SpringFxApplication extends Application {
         primaryStage.setTitle(languageService.getLocalizationText("applicationTitle"));
         primaryStage.setScene(new Scene(root, ViewService.DEFAULT_WIDTH, ViewService.DEFAULT_HEIGHT));
 
+        viewService.registerPrimaryStage(primaryStage);
         viewService.setDefaultStyleCss(primaryStage);
         viewService.restoreScenePositionAndSize(primaryStage);
 
