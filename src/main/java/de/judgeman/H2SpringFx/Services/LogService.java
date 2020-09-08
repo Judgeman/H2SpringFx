@@ -22,7 +22,7 @@ public class LogService {
     private static PrintStream logFilePrintStream = createNewLogFileAndPrintStream();
 
     private static final String LOG_DIRECTORY = "logs";
-    private static final String LOG_NAME_PREFIX = "h2Springfx_";
+    private static final String LOG_NAME_PREFIX = "h2SpringFx_";
 
     public static void tieSystemOutAndErrToFileLogging() {
         System.setOut(createLoggingProxy(System.out));
