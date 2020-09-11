@@ -3,6 +3,7 @@ package de.judgeman.H2SpringFx.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -10,7 +11,7 @@ import java.util.ResourceBundle;
 @Service
 public class LanguageService {
 
-    public final static Locale defaultLanguage = Locale.GERMANY;
+    public final static Locale DEFAULT_LANGUAGE = Locale.GERMANY;
     public final static String LOCALIZATION_BUNDLE_NAME = "localization";
 
     @Autowired
@@ -24,12 +25,12 @@ public class LanguageService {
         languages = createAvailableLanguageList();
     }
 
-    public ArrayList getAvailableLanguages() {
+    public ArrayList<Locale> getAvailableLanguages() {
         return languages;
     }
 
     public Locale getDefaultLanguage() {
-        return defaultLanguage;
+        return DEFAULT_LANGUAGE;
     }
 
     public void setNewLanguage(Locale locale) {
@@ -37,7 +38,16 @@ public class LanguageService {
     }
 
     public String getLocalizationText(String key) {
-        return currentUsedResourceBundle.getString(key);
+        return tryConvertISOStringInUTF8(currentUsedResourceBundle.getString(key));
+    }
+
+    private String tryConvertISOStringInUTF8(String value) {
+        try {
+            return new String(value.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        } catch (Exception ex) {
+            // fall back as it is
+            return value;
+        }
     }
 
     public Locale getLastUsedOrDefaultLanguage() {
@@ -73,14 +83,24 @@ public class LanguageService {
 
     public ResourceBundle getCurrentUsedResourceBundle() {
         if (currentUsedResourceBundle == null) {
-            setCurrentUsedResourceBundle(getDefaultResourceBundle());
+            setCurrentUsedResourceBundle(getLastUsedOrDefaultResourceBundle());
         }
 
         return currentUsedResourceBundle;
     }
 
+    private ResourceBundle getLastUsedOrDefaultResourceBundle() {
+        try {
+            return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, getLastUsedOrDefaultLanguage());
+        } catch (Exception ex) {
+            // ignore
+        }
+
+        return getDefaultResourceBundle();
+    }
+
     private ResourceBundle getDefaultResourceBundle() {
-        return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, getLastUsedOrDefaultLanguage());
+        return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, DEFAULT_LANGUAGE);
     }
 
     public void setCurrentUsedResourceBundle(ResourceBundle currentUsedResourceBundle) {

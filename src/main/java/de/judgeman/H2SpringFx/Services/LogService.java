@@ -19,7 +19,7 @@ public class LogService {
         return LoggerFactory.getLogger(clazz);
     }
 
-    private static PrintStream logFilePrintStream = createNewLogFileAndPrintStream();
+    private static final PrintStream logFilePrintStream = createNewLogFileAndPrintStream();
 
     private static final String LOG_DIRECTORY = "logs";
     private static final String LOG_NAME_PREFIX = "h2SpringFx_";
@@ -30,6 +30,8 @@ public class LogService {
     }
 
     public static void printToLogFile(String text, boolean breakLine) {
+        assert logFilePrintStream != null;
+
         logFilePrintStream.print(text);
         if(breakLine) {
             logFilePrintStream.println();

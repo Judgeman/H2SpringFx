@@ -2,6 +2,7 @@ package de.judgeman.H2SpringFx;
 
 import de.judgeman.H2SpringFx.Services.LanguageService;
 import de.judgeman.H2SpringFx.Services.ViewService;
+import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -38,7 +39,8 @@ public class H2SpringFxApplication extends Application {
         languageService = springContext.getBean(LanguageService.class);
         viewService = springContext.getBean(ViewService.class);
 
-        root = viewService.getRootElementFromFXML(ViewService.FILE_PATH_ENTRY_POINT);
+        root = viewService.getRootElementFromFXML(ViewService.FILE_PATH_MAIN_VIEW);
+        viewService.registerMainViewController(springContext.getBean(MainViewController.class));
     }
 
     private void showStartUpErrorMessage(Exception ex) {

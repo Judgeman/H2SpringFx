@@ -2,6 +2,10 @@
     -fx-background-color: #FFFFFF;
 }
 
+.dialogOverlayerBackground {
+    -fx-background-color: rgb(0,0,0, 0.5);
+}
+
 .defaultButton {
     -fx-padding: 5 22 5 22;
     -fx-border-width: 0;
@@ -17,4 +21,25 @@
 
 .defaultButton:pressed {
     -fx-background-color: #1874CD;
+}
+
+.dialogButton {
+    -fx-padding: 5 22 5 22;
+    -fx-border-width: 0;
+    -fx-background-color: #1C86EE;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-insets: 0 0 0 0, 0, 1, 2;
+}
+
+.lastDialogButton {
+    -fx-background-radius: 0 0 3 3;
+}
+
+.dialogBackground {
+    -fx-background-radius: 0;
+    -fx-background-color: #FFFFFF;
+}
+
+.noShadow {
+    -fx-effect: null;
 }

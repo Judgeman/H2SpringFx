@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
@@ -31,7 +32,7 @@
          <center>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <GridPane alignment="CENTER" prefHeight="100.0" prefWidth="392.0">
+                  <GridPane alignment="CENTER">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="192.0" minWidth="10.0" prefWidth="192.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="126.0" minWidth="10.0" prefWidth="20.0" />
@@ -48,6 +49,11 @@
                         <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveValue" styleClass="defaultButton" text="%saveValue" GridPane.columnIndex="2" />
                         <Button fx:id="loadButton" mnemonicParsing="false" onAction="#loadSavedValue" styleClass="defaultButton" text="%loadSavedValue" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                         <Label fx:id="settingLabel" textOverrun="CLIP" wrapText="true" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                        <CheckBox fx:id="dialogFeedbackCheckbox" mnemonicParsing="false" onAction="#dialogFeedbackCheckBoxChange" text="%useDialogForFeedback" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets left="5.0" top="4.0" />
+                           </GridPane.margin>
+                        </CheckBox>
                      </children>
                   </GridPane>
                </children>

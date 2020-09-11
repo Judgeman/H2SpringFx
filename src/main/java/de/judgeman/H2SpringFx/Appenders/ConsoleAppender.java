@@ -12,9 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConsoleAppender extends AppenderBase<ILoggingEvent> {
 
-    private String pattern;
-
-    private PatternLayout layout;
+    private final PatternLayout layout;
 
     public ConsoleAppender() {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -31,8 +29,6 @@ public class ConsoleAppender extends AppenderBase<ILoggingEvent> {
 
     // need for initialization of the logback
     public void setPattern(String pattern) {
-        this.pattern = pattern;
-
         if(layout.isStarted()) {
             layout.stop();
         }

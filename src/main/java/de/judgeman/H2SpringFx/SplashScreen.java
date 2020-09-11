@@ -27,7 +27,7 @@ public class SplashScreen extends Preloader {
         URL viewUrl = getClass().getResource(ViewService.FILE_PATH_SPLASH_SCREEN);
         URL cssUrl = getClass().getResource(ViewService.FILE_PATH_DEFAULT_STYLE_CSS);
         FXMLLoader fxmlLoader = new FXMLLoader(viewUrl);
-        fxmlLoader.setResources(ResourceBundle.getBundle(LanguageService.LOCALIZATION_BUNDLE_NAME, LanguageService.defaultLanguage));
+        fxmlLoader.setResources(ResourceBundle.getBundle(LanguageService.LOCALIZATION_BUNDLE_NAME, LanguageService.DEFAULT_LANGUAGE));
 
         Parent root = fxmlLoader.load();
 
