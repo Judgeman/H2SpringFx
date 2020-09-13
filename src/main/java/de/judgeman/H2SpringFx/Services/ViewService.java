@@ -88,6 +88,10 @@ public class ViewService {
         this.primaryStage = primaryStage;
     }
 
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
     public void showInformationDialog(String title, String information) throws IOException {
         ViewRootAndControllerPair viewRootAndControllerPair = getRootAndViewControllerFromFXML(FILE_DIALOG_INFORMATION);
         InformationDialogController informationDialogController = ((InformationDialogController) viewRootAndControllerPair.getViewController());

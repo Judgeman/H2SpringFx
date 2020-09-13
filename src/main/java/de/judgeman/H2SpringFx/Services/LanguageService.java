@@ -99,8 +99,8 @@ public class LanguageService {
         return getDefaultResourceBundle();
     }
 
-    private ResourceBundle getDefaultResourceBundle() {
-        return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, DEFAULT_LANGUAGE);
+    public ResourceBundle getDefaultResourceBundle() {
+        return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, getLastUsedOrDefaultLanguage());
     }
 
     public void setCurrentUsedResourceBundle(ResourceBundle currentUsedResourceBundle) {
