@@ -1,5 +1,5 @@
 # H2SpringFx
-Simple Spring Boot Application with JavaFx and H2 Embedded Database
+Simple Spring Boot Application with JavaFx and H2 Embedded Database for Java 1.8
 
 ##### Included Features:
 
