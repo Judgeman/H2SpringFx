@@ -3,13 +3,24 @@
 }
 
 .dialogOverlayerBackground {
-    -fx-background-color: rgb(0,0,0, 0.5);
+    -fx-background-color: rgba(0, 0, 0, 0.5);;
+}
+
+.dialogBackground {
+    -fx-background-color: #FFFFFF;
+}
+
+.dialogFrame {
+    -fx-background-radius: 5;
+}
+
+.lastDialogButton {
+    -fx-background-radius: 0 0 5 5;
 }
 
 .defaultButton {
     -fx-padding: 5 22 5 22;
     -fx-border-width: 0;
-    -fx-background-radius: 0;
     -fx-background-color: #1C86EE;
     -fx-text-fill: #FFFFFF;
     -fx-background-insets: 0 0 0 0, 0, 1, 2;
@@ -31,8 +42,24 @@
     -fx-background-insets: 0 0 0 0, 0, 1, 2;
 }
 
+.dialogButtonPositive {
+    -fx-background-color: #008B00;
+}
+
+.dialogButtonNegative {
+    -fx-background-color: #CD3700;
+}
+
 .lastDialogButton {
     -fx-background-radius: 0 0 3 3;
+}
+
+.lastDialogButtonLeft {
+    -fx-background-radius: 0 0 0 3;
+}
+
+.lastDialogButtonRight {
+    -fx-background-radius: 0 0 3 0;
 }
 
 .dialogBackground {

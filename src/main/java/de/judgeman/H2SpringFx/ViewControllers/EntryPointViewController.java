@@ -4,7 +4,7 @@ import de.judgeman.H2SpringFx.Services.LanguageService;
 import de.judgeman.H2SpringFx.Services.LogService;
 import de.judgeman.H2SpringFx.Services.SettingService;
 import de.judgeman.H2SpringFx.Services.ViewService;
-import de.judgeman.H2SpringFx.ViewControllers.Abstract.ViewController;
+import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,7 +20,7 @@ import java.util.Locale;
  * Created by Paul Richter on Sun 30/03/2020
  */
 @Component
-public class EntryPointViewController extends ViewController {
+public class EntryPointViewController extends BaseViewController {
 
     private final Logger logger = LogService.getLogger(this.getClass());
 

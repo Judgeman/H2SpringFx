@@ -1,6 +1,6 @@
 package de.judgeman.H2SpringFx.HelperClasses;
 
-import de.judgeman.H2SpringFx.ViewControllers.Abstract.ViewController;
+import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
 import javafx.scene.Parent;
 
 /**
@@ -9,9 +9,9 @@ import javafx.scene.Parent;
 public class ViewRootAndControllerPair {
 
     private Parent root;
-    private ViewController viewController;
+    private BaseViewController viewController;
 
-    public ViewRootAndControllerPair(Parent root, ViewController viewController) {
+    public ViewRootAndControllerPair(Parent root, BaseViewController viewController) {
         this.root = root;
         this.viewController = viewController;
     }
@@ -24,11 +24,11 @@ public class ViewRootAndControllerPair {
         this.root = root;
     }
 
-    public ViewController getViewController() {
+    public BaseViewController getViewController() {
         return viewController;
     }
 
-    public void setViewController(ViewController viewController) {
+    public void setViewController(BaseViewController viewController) {
         this.viewController = viewController;
     }
 }

@@ -1,8 +1,10 @@
 package de.judgeman.H2SpringFx;
 
+import de.judgeman.H2SpringFx.HelperClasses.CustomRoutingDataSource;
+import de.judgeman.H2SpringFx.Services.DataSourceService;
+import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import de.judgeman.H2SpringFx.Services.LanguageService;
 import de.judgeman.H2SpringFx.Services.ViewService;
-import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,6 +13,10 @@ import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Created by Paul Richter on Mon 30/03/2020
@@ -30,17 +36,27 @@ public class H2SpringFxApplication extends Application {
     public void init() throws Exception {
         try {
             springContext = SpringApplication.run(H2SpringFxApplication.class);
+
+            languageService = springContext.getBean(LanguageService.class);
+            viewService = springContext.getBean(ViewService.class);
+            DataSourceService dataSourceService = springContext.getBean(DataSourceService.class);
+
+            dataSourceService.checkSettingsDatasourceAndInitIfNeeded();
+
+            root = viewService.getRootElementFromFXML(ViewService.FILE_PATH_MAIN_VIEW);
+            viewService.registerMainViewController(springContext.getBean(MainViewController.class));
         } catch (Exception ex) {
             ex.printStackTrace();
             exceptionOnStartup = ex;
-            return;
         }
+    }
 
-        languageService = springContext.getBean(LanguageService.class);
-        viewService = springContext.getBean(ViewService.class);
+    @Bean
+    public DataSource dataSource() throws SQLException {
+        CustomRoutingDataSource customRoutingDataSource = new CustomRoutingDataSource();
+        customRoutingDataSource.setTargetDataSources(customRoutingDataSource.getTargetDataSources());
 
-        root = viewService.getRootElementFromFXML(ViewService.FILE_PATH_MAIN_VIEW);
-        viewService.registerMainViewController(springContext.getBean(MainViewController.class));
+        return customRoutingDataSource;
     }
 
     private void showStartUpErrorMessage(Exception ex) {

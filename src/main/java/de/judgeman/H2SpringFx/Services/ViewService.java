@@ -1,8 +1,11 @@
 package de.judgeman.H2SpringFx.Services;
 
+import de.judgeman.H2SpringFx.HelperClasses.CallBack;
 import de.judgeman.H2SpringFx.HelperClasses.ViewRootAndControllerPair;
-import de.judgeman.H2SpringFx.ViewControllers.Abstract.ViewController;
-import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.InformationDialogController;
+import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseDialogController;
+import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
+import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.ConfirmDialogController;
+import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.TextInputDialogController;
 import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
@@ -10,11 +13,13 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -24,10 +29,15 @@ public class ViewService {
     public static final String FILE_PATH_DEFAULT_STYLE_CSS = "/h2SpringFxStyle.css";
 
     public static final String FILE_PATH_MAIN_VIEW = "/views/MainView.fxml";
-    public static final String FILE_PATH_SPLASH_SCREEN = "/SplashScreen.fxml";
-    public static final String FILE_PATH_ENTRY_POINT = "/views/EntryPointView.fxml";
+    public static final String FILE_PATH_SPLASH_SCREEN = "/views/SplashScreen.fxml";
 
-    public static final String FILE_DIALOG_INFORMATION = "/views/dialogViews/informationDialog.fxml";
+    public static final String FILE_PATH_DIALOG_INFORMATION = "/views/dialogViews/InformationDialog.fxml";
+    public static final String FILE_PATH_DIALOG_CONFIRMATION = "/views/dialogViews/ConfirmDialog.fxml";
+    public static final String FILE_PATH_DIALOG_TEXT_INPUT = "/views/dialogViews/TextInputDialog.fxml";
+
+    public static final String FILE_PATH_DATASOURCE_SELECTION_VIEW = "/views/DataSourceSelectionView.fxml";
+    public static final String FILE_PATH_SETTINGS_VIEW = "/views/SettingsView.fxml";
+    public static final String FILE_PATH_TODO_VIEW = "/views/TodoView.fxml";
 
     public static final double DEFAULT_WIDTH = 800;
     public static final double DEFAULT_HEIGHT = 600;
@@ -75,7 +85,7 @@ public class ViewService {
         fxmlLoader.setControllerFactory(springContext::getBean);
 
         Parent root = fxmlLoader.load();
-        ViewController viewController = fxmlLoader.getController();
+        BaseViewController viewController = fxmlLoader.getController();
 
         return new ViewRootAndControllerPair(root, viewController);
     }
@@ -93,13 +103,44 @@ public class ViewService {
     }
 
     public void showInformationDialog(String title, String information) throws IOException {
-        ViewRootAndControllerPair viewRootAndControllerPair = getRootAndViewControllerFromFXML(FILE_DIALOG_INFORMATION);
-        InformationDialogController informationDialogController = ((InformationDialogController) viewRootAndControllerPair.getViewController());
+        showDialog(initDialog(title, information, FILE_PATH_DIALOG_INFORMATION).getRoot());
+    }
 
-        informationDialogController.setTitle(title);
-        informationDialogController.setInformation(information);
+    public void showConfirmationDialog(String title, String information, CallBack callBack) throws IOException {
+        ViewRootAndControllerPair viewRootAndControllerPair = initDialog(title, information, FILE_PATH_DIALOG_CONFIRMATION);
+        ((ConfirmDialogController) viewRootAndControllerPair.getViewController()).setCallBack(callBack);
 
         showDialog(viewRootAndControllerPair.getRoot());
+    }
+
+    public void showInputDialog(String title,
+                                String information,
+                                String initialInputText,
+                                TextInputDialogController.InputValidation validation,
+                                boolean initialValidation,
+                                CallBack callBack) throws IOException {
+        ViewRootAndControllerPair viewRootAndControllerPair = initDialog(title, information, FILE_PATH_DIALOG_TEXT_INPUT);
+
+        TextInputDialogController inputController = (TextInputDialogController) viewRootAndControllerPair.getViewController();
+        inputController.setInitialInputText(initialInputText);
+        inputController.setValidationCheckForInput(validation);
+        inputController.setCallBack(callBack);
+
+        if (initialValidation) {
+            inputController.validateInput();
+        }
+
+        showDialog(viewRootAndControllerPair.getRoot());
+    }
+
+    private ViewRootAndControllerPair initDialog(String title, String information, String dialogFilePath) throws IOException {
+        ViewRootAndControllerPair viewRootAndControllerPair = getRootAndViewControllerFromFXML(dialogFilePath);
+        BaseDialogController dialogController = ((BaseDialogController) viewRootAndControllerPair.getViewController());
+
+        dialogController.setTitle(title);
+        dialogController.setInformation(information);
+
+        return viewRootAndControllerPair;
     }
 
     private void showDialog(Parent dialogRoot) {
@@ -118,6 +159,10 @@ public class ViewService {
     }
 
     public void dismissDialog() {
+        dismissDialog(null);
+    }
+
+    public void dismissDialog(CallBack callBack) {
         dismissRootElementFromGlassPane();
 
         FadeTransition dialogBackgroundPaneFadeOutTransition = animationService.createFadeOutTransition(mainViewController.getDialogOverLayer());
@@ -127,6 +172,10 @@ public class ViewService {
             mainViewController.getGlassPane().setVisible(false);
             mainViewController.getDialogOverLayer().setVisible(false);
             mainViewController.getGlassPane().getChildren().clear();
+
+            if (callBack != null) {
+                callBack.execute();
+            }
         });
 
         SequentialTransition sequentialTransition = new SequentialTransition();
@@ -141,4 +190,22 @@ public class ViewService {
         }
     }
 
+    public File getDirectoryFromUser(String title) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle(title);
+
+        return directoryChooser.showDialog(primaryStage);
+    }
+
+    public MainViewController getMainViewController() {
+        return mainViewController;
+    }
+
+    public void registerLastView(String filePathToView) {
+        getMainViewController().setLastViewPath(filePathToView);
+    }
+
+    public void showNewView(String filePathToView) throws IOException {
+        getMainViewController().loadAndShowView(filePathToView);
+    }
 }
