@@ -1,7 +1,7 @@
 package de.judgeman.H2SpringFx.Services;
 
 import de.judgeman.H2SpringFx.HelperClasses.CustomRoutingDataSource;
-import de.judgeman.H2SpringFx.HelperClasses.DataSourceDatabaseConnectionTupel;
+import de.judgeman.H2SpringFx.HelperClasses.DataSourceDatabaseConnectionTuple;
 import de.judgeman.H2SpringFx.Model.DatabaseConnection;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +9,11 @@ import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * Created by Paul Richter on Tue 08/09/2020
@@ -31,9 +29,6 @@ public class DataSourceService {
 
     @Autowired
     private SettingService settingService;
-
-    @Autowired
-    private LocalSessionFactoryBean sessionFactory;
 
     @Autowired
     CustomRoutingDataSource customRoutingDataSource;
@@ -55,24 +50,15 @@ public class DataSourceService {
                 databaseConnection.getUsername(),
                 databaseConnection.getPassword());
 
-        DataSourceDatabaseConnectionTupel newTupel = new DataSourceDatabaseConnectionTupel();
-        newTupel.dataSource = dataSource;
-        newTupel.databaseConnection = databaseConnection;
+        DataSourceDatabaseConnectionTuple newTuple = new DataSourceDatabaseConnectionTuple();
+        newTuple.dataSource = dataSource;
+        newTuple.databaseConnection = databaseConnection;
 
-        customRoutingDataSource.registerNewDataSource(SettingService.NAME_PRIMARY_DATASOURCE, newTupel);
+        customRoutingDataSource.registerNewDataSource(SettingService.NAME_PRIMARY_DATASOURCE, newTuple);
     }
 
-    public void setCurrentDataSourceNameAndDialect(String datasourceName) {
+    public void setCurrentDataSourceName(String datasourceName) {
         customRoutingDataSource.setCurrentDataSourceName(datasourceName);
-        DataSourceDatabaseConnectionTupel tuple = customRoutingDataSource.getDataSourceDatabaseConnectionTuple(datasourceName);
-        if (tuple == null) {
-            return;
-        }
-
-        Properties properties = new Properties();
-        properties.setProperty("hibernate.dialect", tuple.databaseConnection.getSqlDialact());
-
-        sessionFactory.setHibernateProperties(properties);
     }
 
     private boolean IsSchemaInitialisationForSettingsDBNeeded() {
@@ -87,7 +73,7 @@ public class DataSourceService {
 
     private void InitSettingsSchema(DataSource dataSource) throws SQLException {
         logger.info("Try to init settings database structure");
-        // TODO: set the datasource dialect
+
         executeDatabaseSchemaScript(dataSource, DATABASE_SCHEMA_CONFIG_FILE_DROP_ALL_TABLE);
         executeDatabaseSchemaScript(dataSource, DATABASE_SCHEMA_CONFIG_FILE_SETTINGS);
 

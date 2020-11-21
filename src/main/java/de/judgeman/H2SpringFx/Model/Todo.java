@@ -8,11 +8,11 @@ import javax.persistence.Id;
 /**
  * Created by Paul Richter on Sun 20/09/2020
  */
-@Entity
+@Entity(name = "TODO")
 public class Todo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String text;

@@ -1,5 +1,6 @@
 package de.judgeman.H2SpringFx.HelperClasses;
 
+import de.judgeman.H2SpringFx.H2SpringFxApplication;
 import de.judgeman.H2SpringFx.Model.DatabaseConnection;
 import de.judgeman.H2SpringFx.Services.SettingService;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -22,9 +23,11 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
     private final static String CONFIG_DATASOURCE_SETTINGS_DRIVER_USERNAME = "SA";
     private final static String CONFIG_DATASOURCE_SETTINGS_DRIVER_PASSWORD = "";
 
-    private final Map<String, DataSourceDatabaseConnectionTupel> targetDataSources;
+    private final Map<String, DataSourceDatabaseConnectionTuple> targetDataSources;
 
     private String currentDataSourceName;
+
+    private String currentDialect;
 
     public CustomRoutingDataSource() throws SQLException {
         targetDataSources = new HashMap<>();
@@ -41,7 +44,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
         return null;
     }
 
-    public DataSourceDatabaseConnectionTupel getDataSourceDatabaseConnectionTuple(String lookUpKey) {
+    public DataSourceDatabaseConnectionTuple getDataSourceDatabaseConnectionTuple(String lookUpKey) {
         if (targetDataSources.containsKey(lookUpKey)) {
             return targetDataSources.get(lookUpKey);
         }
@@ -56,12 +59,12 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
     private void initSettingsDatasource() throws SQLException {
         DatabaseConnection databaseConnection = createSettingDatabaseConnection();
         DataSource dataSource = createSettingsDataSource();
-        DataSourceDatabaseConnectionTupel tupel = new DataSourceDatabaseConnectionTupel();
+        DataSourceDatabaseConnectionTuple tuple = new DataSourceDatabaseConnectionTuple();
 
-        tupel.databaseConnection = databaseConnection;
-        tupel.dataSource = dataSource;
+        tuple.databaseConnection = databaseConnection;
+        tuple.dataSource = dataSource;
 
-        targetDataSources.put(SettingService.NAME_SETTING_DATASOURCE, tupel);
+        targetDataSources.put(SettingService.NAME_SETTING_DATASOURCE, tuple);
     }
 
     private DatabaseConnection createSettingDatabaseConnection() {
@@ -71,7 +74,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
         databaseConnection.setPassword(CONFIG_DATASOURCE_SETTINGS_DRIVER_PASSWORD);
         databaseConnection.setJdbcConnectionPrefix(CONFIG_DATASOURCE_SETTINGS_PATH_PREFIX);
         databaseConnection.setJdbcConnectionPath(CONFIG_DATASOURCE_SETTINGS_PATH);
-        databaseConnection.setSqlDialact(CONFIG_DATASOURCE_SETTINGS_SQL_DIALECT);
+        databaseConnection.setSqlDialect(CONFIG_DATASOURCE_SETTINGS_SQL_DIALECT);
 
         return databaseConnection;
     }
@@ -97,7 +100,7 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
         return dataSource;
     }
 
-    public void registerNewDataSource(String dataSourceName, DataSourceDatabaseConnectionTupel tupel) {
+    public void registerNewDataSource(String dataSourceName, DataSourceDatabaseConnectionTuple tupel) {
         targetDataSources.put(dataSourceName, tupel);
     }
 
@@ -108,7 +111,15 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
 
     @Override
     protected DataSource determineTargetDataSource() {
-        return targetDataSources.get(currentDataSourceName).dataSource;
+        DataSourceDatabaseConnectionTuple tuple = targetDataSources.get(currentDataSourceName);
+        String newDialect = tuple.databaseConnection.getSqlDialect();
+
+        if (!newDialect.equals(currentDialect)) {
+            currentDialect = newDialect;
+            H2SpringFxApplication.testSettingDialect(newDialect);
+        }
+
+        return tuple.dataSource;
     }
 
     public void setCurrentDataSourceName(String currentDataSourceName) {
@@ -123,8 +134,8 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
         Map<Object, Object> newMap = new HashMap<>();
 
         for (String key : targetDataSources.keySet()) {
-            DataSourceDatabaseConnectionTupel tupel = targetDataSources.get(key);
-            newMap.put(key, tupel.dataSource);
+            DataSourceDatabaseConnectionTuple tuple = targetDataSources.get(key);
+            newMap.put(key, tuple.dataSource);
         }
 
         return newMap;

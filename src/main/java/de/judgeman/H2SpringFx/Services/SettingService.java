@@ -32,7 +32,7 @@ public class SettingService {
     private DataSourceService dataSourceService;
 
     public void saveSetting(String key, String value) {
-        dataSourceService.setCurrentDataSourceNameAndDialect(NAME_SETTING_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         SettingEntry settingEntry = settingEntryRepository.findById(key).orElse(null);
 
         if(settingEntry == null) {
@@ -45,7 +45,7 @@ public class SettingService {
     }
 
     public String loadSetting(String key) {
-        dataSourceService.setCurrentDataSourceNameAndDialect(NAME_SETTING_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         SettingEntry settingEntry = settingEntryRepository.findById(key).orElse(null);
 
         if(settingEntry == null) {
@@ -56,7 +56,7 @@ public class SettingService {
     }
 
     public boolean deleteSetting(String key) {
-        dataSourceService.setCurrentDataSourceNameAndDialect(NAME_SETTING_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         SettingEntry settingEntry = settingEntryRepository.findById(key).orElse(null);
 
         if(settingEntry != null) {
@@ -68,28 +68,28 @@ public class SettingService {
     }
 
     public DatabaseConnection getDatabaseConnection(String name) {
-        dataSourceService.setCurrentDataSourceNameAndDialect(NAME_SETTING_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         return databaseConnectionRepository.findById(name).orElse(null);
     }
 
     public List<DatabaseConnection> getAllDatabaseConnections() {
-        dataSourceService.setCurrentDataSourceNameAndDialect(NAME_SETTING_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         return databaseConnectionRepository.findAll();
     }
 
     public boolean existAnyDatabaseConnections() {
-        dataSourceService.setCurrentDataSourceNameAndDialect(NAME_SETTING_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         List<DatabaseConnection> databaseConnections = databaseConnectionRepository.findAll(PageRequest.of(0, 1));
         return databaseConnections.size() > 0;
     }
 
     public DatabaseConnection saveNewConnection(String driverClassName, String sqlDialect, String urlPrefix, String urlPath, String name, String username, String password) {
-        dataSourceService.setCurrentDataSourceNameAndDialect(NAME_SETTING_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         DatabaseConnection databaseConnection = new DatabaseConnection();
 
         databaseConnection.setId(name);
         databaseConnection.setDriverClassName(driverClassName);
-        databaseConnection.setSqlDialact(sqlDialect);
+        databaseConnection.setSqlDialect(sqlDialect);
         databaseConnection.setJdbcConnectionPrefix(urlPrefix);
         databaseConnection.setJdbcConnectionPath(urlPath);
         databaseConnection.setUsername(username);
@@ -112,7 +112,7 @@ public class SettingService {
     }
 
     public void deleteConnection(DatabaseConnection databaseConnection) {
-        dataSourceService.setCurrentDataSourceNameAndDialect(NAME_SETTING_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         databaseConnectionRepository.delete(databaseConnection);
     }
 }

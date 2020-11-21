@@ -5,23 +5,23 @@ import javax.persistence.*;
 /**
  * Created by Paul Richter on Tue 08/09/2020
  */
-@Entity
+@Entity(name = "DATABASE_CONNECTION")
 public class DatabaseConnection {
 
     @Id
     @Column
     private String id;
 
-    @Column
+    @Column (name = "DRIVER_CLASS_NAME")
     private String driverClassName;
 
-    @Column
-    private String sqlDialact;
+    @Column (name = "SQL_DIALECT")
+    private String sqlDialect;
 
-    @Column
+    @Column (name = "JDBC_CONNECTION_PREFIX")
     private String jdbcConnectionPrefix;
 
-    @Column
+    @Column (name = "JDBC_CONNECTION_PATH")
     private String jdbcConnectionPath;
 
     @Column
@@ -46,12 +46,12 @@ public class DatabaseConnection {
         this.driverClassName = driverClassName;
     }
 
-    public String getSqlDialact() {
-        return sqlDialact;
+    public String getSqlDialect() {
+        return sqlDialect;
     }
 
-    public void setSqlDialact(String sqlDialact) {
-        this.sqlDialact = sqlDialact;
+    public void setSqlDialect(String sqlDialect) {
+        this.sqlDialect = sqlDialect;
     }
 
     public String getJdbcConnectionPrefix() {

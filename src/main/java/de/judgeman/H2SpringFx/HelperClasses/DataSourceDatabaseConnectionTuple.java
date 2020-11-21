@@ -7,7 +7,7 @@ import javax.sql.DataSource;
 /**
  * Created by Paul Richter on Sun 04/10/2020
  */
-public class DataSourceDatabaseConnectionTupel {
+public class DataSourceDatabaseConnectionTuple {
     public DataSource dataSource;
     public DatabaseConnection databaseConnection;
 }

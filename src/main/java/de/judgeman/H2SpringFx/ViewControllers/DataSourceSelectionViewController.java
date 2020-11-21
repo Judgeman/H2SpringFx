@@ -33,6 +33,11 @@ public class DataSourceSelectionViewController extends BaseViewController {
     private static final String DATABASE_DRIVER_CLASSNAME_H2 = "org.h2.Driver";
     private static final String DATABASE_CONNECTION_PREFIX_H2 = "jdbc:h2:file:";
 
+    private static final String DATABASE_TYPE_SQL = "SQL";
+    private static final String DATABASE_SQL_DIALECT_SQL = "org.hibernate.dialect.SQLServerDialect";
+    private static final String DATABASE_DRIVER_CLASSNAME_SQL = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private static final String DATABASE_CONNECTION_PREFIX_SQL = "jdbc:sqlserver:";
+
     private final Logger logger = LogService.getLogger(this.getClass());
 
     @Autowired
@@ -81,7 +86,7 @@ public class DataSourceSelectionViewController extends BaseViewController {
 
         DatabaseConnection newDatabaseConnection = settingService.saveNewConnection(getDriverClassNameForType(typeComboBox.getValue()),
                                                                                                 getSqlDialectForType(typeComboBox.getValue()),
-                                                                                                DATABASE_CONNECTION_PREFIX_H2,
+                                                                                                getConnectionPrefix(typeComboBox.getValue()),
                                                                                                 pathTextField.getText(),
                                                                                                 nameTextField.getText(),
                                                                                                 usernameTextField.getText(),
@@ -91,9 +96,19 @@ public class DataSourceSelectionViewController extends BaseViewController {
         viewService.showNewView(ViewService.FILE_PATH_TODO_VIEW);
     }
 
+    private String getConnectionPrefix(String type) {
+        if (type.equals(DATABASE_TYPE_H2)) {
+            return DATABASE_CONNECTION_PREFIX_H2;
+        } else if (type.equals(DATABASE_TYPE_SQL)) {
+            return DATABASE_CONNECTION_PREFIX_SQL;
+        }
+
+        return null;
+    }
+
     private void fillConnectionTypeComboBox() {
         // TODO: move this value to connectionService?
-        typeComboBox.setItems(FXCollections.observableArrayList(DATABASE_TYPE_H2));
+        typeComboBox.setItems(FXCollections.observableArrayList(DATABASE_TYPE_H2, DATABASE_TYPE_SQL));
     }
 
     public void testConnection() {
@@ -104,7 +119,8 @@ public class DataSourceSelectionViewController extends BaseViewController {
 
         try {
             DataSource newDataSource = dataSourceService.createNewDataSource(getDriverClassNameForType(typeComboBox.getValue()),
-                                                                             getH2UrlPath(pathTextField.getText()),
+                                                                             getUrlPath(typeComboBox.getValue(),
+                                                                             pathTextField.getText()),
                                                                              usernameTextField.getText(),
                                                                              passwordTextField.getText());
             newDataSource.getConnection().isValid(10);
@@ -126,13 +142,21 @@ public class DataSourceSelectionViewController extends BaseViewController {
         return true;
     }
 
-    private String getH2UrlPath(String path) {
-        return String.format("%s%s%s", DATABASE_CONNECTION_PREFIX_H2, path, ";create=false");
+    private String getUrlPath(String type, String path) {
+        if (type.equals(DATABASE_TYPE_H2)) {
+            return String.format("%s%s%s", DATABASE_CONNECTION_PREFIX_H2, path, ";create=false");
+        } else if (type.equals(DATABASE_TYPE_SQL)) {
+            return String.format("%s%s", DATABASE_CONNECTION_PREFIX_SQL, path);
+        }
+
+        return null;
     }
 
     private String getSqlDialectForType(String type) {
         if (type.equals(DATABASE_TYPE_H2)) {
             return DATABASE_SQL_DIALECT_H2;
+        } else if (type.equals(DATABASE_TYPE_SQL)) {
+            return DATABASE_SQL_DIALECT_SQL;
         }
 
         return null;
@@ -141,6 +165,8 @@ public class DataSourceSelectionViewController extends BaseViewController {
     private String getDriverClassNameForType(String type) {
         if (type.equals(DATABASE_TYPE_H2)) {
             return DATABASE_DRIVER_CLASSNAME_H2;
+        } else if (type.equals(DATABASE_TYPE_SQL)) {
+            return DATABASE_DRIVER_CLASSNAME_SQL;
         }
 
         return null;
@@ -180,9 +206,11 @@ public class DataSourceSelectionViewController extends BaseViewController {
     private void createNewH2DatabaseFile(String databasePath) throws SQLException {
         // TODO: input for username and password??
         DataSource dataSource = dataSourceService.createNewDataSource(getDriverClassNameForType(typeComboBox.getValue()),
-                                                                      getH2UrlPath(databasePath), "SA", "");
+                                                                      getUrlPath(typeComboBox.getValue(), databasePath),
+                                                             "SA",
+                                                             "");
 
-        // TOOD: ask user for overriding if the file exists already
+        // TODO: ask user for overriding if the file exists already
 
         URL databaseCreateSchemaUrl = getClass().getClassLoader().getResource("config/databaseSchema_model_create.sql");
         URL databaseDropSchemaUrl = getClass().getClassLoader().getResource("config/databaseSchema_drop.sql");

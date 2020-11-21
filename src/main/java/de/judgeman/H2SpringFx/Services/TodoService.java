@@ -20,12 +20,12 @@ public class TodoService {
     private DataSourceService dataSourceService;
 
     public ArrayList<Todo> loadAllTodos() {
-        dataSourceService.setCurrentDataSourceNameAndDialect(SettingService.NAME_PRIMARY_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
         return todoRepository.findAllByOrderByIdAsc();
     }
 
     public Todo saveNewTodo(String text) {
-        dataSourceService.setCurrentDataSourceNameAndDialect(SettingService.NAME_PRIMARY_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
 
         Todo newTodo = new Todo();
         newTodo.setText(text);
@@ -36,12 +36,12 @@ public class TodoService {
     }
 
     public void saveTodo(Todo todo) {
-        dataSourceService.setCurrentDataSourceNameAndDialect(SettingService.NAME_PRIMARY_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
         todoRepository.save(todo);
     }
 
     public void deleteTodo(Todo todo) {
-        dataSourceService.setCurrentDataSourceNameAndDialect(SettingService.NAME_PRIMARY_DATASOURCE);
+        dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
         todoRepository.delete(todo);
     }
 }

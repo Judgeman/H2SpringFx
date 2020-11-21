@@ -5,7 +5,7 @@ import javax.persistence.*;
 /**
  * Created by Paul Richter on Mon 30/03/2020
  */
-@Entity
+@Entity(name = "SETTING_ENTRY")
 public class SettingEntry {
 
     @Id
