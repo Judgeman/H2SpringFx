@@ -1,4 +1,4 @@
-package de.judgeman.H2SpringFx.Model;
+package de.judgeman.H2SpringFx.Setting.Model;
 
 import javax.persistence.*;
 

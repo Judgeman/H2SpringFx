@@ -1,6 +1,6 @@
-package de.judgeman.H2SpringFx.Repositories;
+package de.judgeman.H2SpringFx.Setting.Repository;
 
-import de.judgeman.H2SpringFx.Model.SettingEntry;
+import de.judgeman.H2SpringFx.Setting.Model.SettingEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

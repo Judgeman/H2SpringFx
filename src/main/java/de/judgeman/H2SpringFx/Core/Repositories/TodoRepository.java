@@ -1,4 +1,4 @@
-package de.judgeman.H2SpringFx.Repositories;
+package de.judgeman.H2SpringFx.Core.Repositories;
 
 import de.judgeman.H2SpringFx.Model.Todo;
 import org.springframework.data.repository.CrudRepository;

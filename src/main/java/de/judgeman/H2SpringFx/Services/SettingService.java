@@ -1,9 +1,9 @@
 package de.judgeman.H2SpringFx.Services;
 
-import de.judgeman.H2SpringFx.Model.DatabaseConnection;
-import de.judgeman.H2SpringFx.Model.SettingEntry;
-import de.judgeman.H2SpringFx.Repositories.DatabaseConnectionRepository;
-import de.judgeman.H2SpringFx.Repositories.SettingEntryRepository;
+import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
+import de.judgeman.H2SpringFx.Setting.Model.SettingEntry;
+import de.judgeman.H2SpringFx.Setting.Repository.DatabaseConnectionRepository;
+import de.judgeman.H2SpringFx.Setting.Repository.SettingEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -16,11 +16,9 @@ import java.util.List;
 @Service
 public class SettingService {
 
-    public static final String NAME_SETTING_DATASOURCE = "Settings";
     public static final String NAME_PRIMARY_DATASOURCE = "Primary";
 
     public static final String LANGUAGE_ENTRY_KEY = "currentLanguage";
-    public static final String USE_DIALOG_ENTRY_KEY = "useDialog";
     public static final String SETTINGS_DATABASE_INIT_KEY = "settingsDbInit";
     public static final String CURRENT_PRIMARY_DATABASE_CONNECTION_KEY = "currentDatabaseConnection";
 
@@ -28,11 +26,8 @@ public class SettingService {
     private SettingEntryRepository settingEntryRepository;
     @Autowired
     private DatabaseConnectionRepository databaseConnectionRepository;
-    @Autowired
-    private DataSourceService dataSourceService;
 
     public void saveSetting(String key, String value) {
-        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         SettingEntry settingEntry = settingEntryRepository.findById(key).orElse(null);
 
         if(settingEntry == null) {
@@ -45,7 +40,6 @@ public class SettingService {
     }
 
     public String loadSetting(String key) {
-        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         SettingEntry settingEntry = settingEntryRepository.findById(key).orElse(null);
 
         if(settingEntry == null) {
@@ -56,7 +50,6 @@ public class SettingService {
     }
 
     public boolean deleteSetting(String key) {
-        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         SettingEntry settingEntry = settingEntryRepository.findById(key).orElse(null);
 
         if(settingEntry != null) {
@@ -68,23 +61,19 @@ public class SettingService {
     }
 
     public DatabaseConnection getDatabaseConnection(String name) {
-        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         return databaseConnectionRepository.findById(name).orElse(null);
     }
 
     public List<DatabaseConnection> getAllDatabaseConnections() {
-        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         return databaseConnectionRepository.findAll();
     }
 
     public boolean existAnyDatabaseConnections() {
-        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         List<DatabaseConnection> databaseConnections = databaseConnectionRepository.findAll(PageRequest.of(0, 1));
         return databaseConnections.size() > 0;
     }
 
     public DatabaseConnection saveNewConnection(String driverClassName, String sqlDialect, String urlPrefix, String urlPath, String name, String username, String password) {
-        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         DatabaseConnection databaseConnection = new DatabaseConnection();
 
         databaseConnection.setId(name);
@@ -112,7 +101,6 @@ public class SettingService {
     }
 
     public void deleteConnection(DatabaseConnection databaseConnection) {
-        dataSourceService.setCurrentDataSourceName(NAME_SETTING_DATASOURCE);
         databaseConnectionRepository.delete(databaseConnection);
     }
 }

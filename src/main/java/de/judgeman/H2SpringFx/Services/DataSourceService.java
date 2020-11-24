@@ -1,8 +1,8 @@
 package de.judgeman.H2SpringFx.Services;
 
-import de.judgeman.H2SpringFx.HelperClasses.CustomRoutingDataSource;
+import de.judgeman.H2SpringFx.Core.Configuration.MainRepositoryConfiguration;
 import de.judgeman.H2SpringFx.HelperClasses.DataSourceDatabaseConnectionTuple;
-import de.judgeman.H2SpringFx.Model.DatabaseConnection;
+import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileUrlResource;
@@ -30,22 +30,8 @@ public class DataSourceService {
     @Autowired
     private SettingService settingService;
 
-    @Autowired
-    CustomRoutingDataSource customRoutingDataSource;
-
-    public void checkSettingsDatasourceAndInitIfNeeded() throws SQLException {
-        customRoutingDataSource.setCurrentDataSourceName(SettingService.NAME_SETTING_DATASOURCE);
-        DataSource dataSource = customRoutingDataSource.getCurrentDataSource();
-
-        assert dataSource != null;
-
-        if (IsSchemaInitialisationForSettingsDBNeeded()) {
-            InitSettingsSchema(dataSource);
-        }
-    }
-
     public void initializePrimaryDataSource(DatabaseConnection databaseConnection) {
-        DataSource dataSource = customRoutingDataSource.createNewDataSource(databaseConnection.getDriverClassName(),
+        DataSource dataSource = MainRepositoryConfiguration.customRoutingDataSource.createNewDataSource(databaseConnection.getDriverClassName(),
                 String.format("%s%s", databaseConnection.getJdbcConnectionPrefix(), databaseConnection.getJdbcConnectionPath()),
                 databaseConnection.getUsername(),
                 databaseConnection.getPassword());
@@ -54,11 +40,11 @@ public class DataSourceService {
         newTuple.dataSource = dataSource;
         newTuple.databaseConnection = databaseConnection;
 
-        customRoutingDataSource.registerNewDataSource(SettingService.NAME_PRIMARY_DATASOURCE, newTuple);
+        MainRepositoryConfiguration.customRoutingDataSource.registerNewDataSource(SettingService.NAME_PRIMARY_DATASOURCE, newTuple);
     }
 
     public void setCurrentDataSourceName(String datasourceName) {
-        customRoutingDataSource.setCurrentDataSourceName(datasourceName);
+        MainRepositoryConfiguration.customRoutingDataSource.setCurrentDataSourceName(datasourceName);
     }
 
     private boolean IsSchemaInitialisationForSettingsDBNeeded() {
@@ -101,6 +87,6 @@ public class DataSourceService {
     }
 
     public boolean isPrimaryDataSourceAvailable() {
-        return customRoutingDataSource.getDataSource(SettingService.NAME_PRIMARY_DATASOURCE) != null;
+        return MainRepositoryConfiguration.customRoutingDataSource.getDataSource(SettingService.NAME_PRIMARY_DATASOURCE) != null;
     }
 }

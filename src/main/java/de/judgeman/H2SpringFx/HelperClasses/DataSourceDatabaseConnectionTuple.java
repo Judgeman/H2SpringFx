@@ -1,6 +1,6 @@
 package de.judgeman.H2SpringFx.HelperClasses;
 
-import de.judgeman.H2SpringFx.Model.DatabaseConnection;
+import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
 
 import javax.sql.DataSource;
 

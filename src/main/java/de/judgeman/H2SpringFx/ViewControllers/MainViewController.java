@@ -1,6 +1,6 @@
 package de.judgeman.H2SpringFx.ViewControllers;
 
-import de.judgeman.H2SpringFx.Model.DatabaseConnection;
+import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
 import de.judgeman.H2SpringFx.Services.*;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
 import javafx.fxml.FXML;
@@ -70,6 +70,7 @@ public class MainViewController extends BaseViewController {
         }
 
         initializeCurrentDataSource();
+        dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
         showTodoView();
     }
 
