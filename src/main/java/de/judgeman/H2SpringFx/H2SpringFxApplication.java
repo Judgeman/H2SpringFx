@@ -1,17 +1,16 @@
 package de.judgeman.H2SpringFx;
 
+import de.judgeman.H2SpringFx.Services.AlertService;
 import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import de.judgeman.H2SpringFx.Services.LanguageService;
 import de.judgeman.H2SpringFx.Services.ViewService;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
  * Created by Paul Richter on Mon 30/03/2020
@@ -26,8 +25,6 @@ public class H2SpringFxApplication extends Application {
     private ViewService viewService;
 
     private Exception exceptionOnStartup;
-
-    private static LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
     @Override
     public void init() {
@@ -45,19 +42,10 @@ public class H2SpringFxApplication extends Application {
         }
     }
 
-    private void showStartUpErrorMessage(Exception ex) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Ups something went wrong");
-        alert.setHeaderText("Error on loading Application");
-        alert.setContentText(ex.getMessage());
-
-        alert.showAndWait();
-    }
-
     @Override
     public void start(Stage primaryStage) {
         if (exceptionOnStartup != null) {
-            showStartUpErrorMessage(exceptionOnStartup);
+            AlertService.showAlert(exceptionOnStartup);
             return;
         }
 

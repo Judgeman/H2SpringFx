@@ -1,4 +1,4 @@
-package de.judgeman.H2SpringFx.Model;
+package de.judgeman.H2SpringFx.Core.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

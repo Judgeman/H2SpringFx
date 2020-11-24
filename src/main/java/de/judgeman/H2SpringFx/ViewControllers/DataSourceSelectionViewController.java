@@ -80,6 +80,9 @@ public class DataSourceSelectionViewController extends BaseViewController {
         }
     }
 
+    // TODO: add inputs for SQL connection
+    // TODO: hide and show all relevant inputs for h2 / sql connection definition
+
     public void saveDatabaseConnection() throws IOException {
 
         // TODO: check connection is valid!?

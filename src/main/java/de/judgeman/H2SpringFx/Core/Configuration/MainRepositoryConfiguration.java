@@ -22,10 +22,16 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "mainEntityManagerFactory",
-        transactionManagerRef = "mainTransactionManager",
+        entityManagerFactoryRef = "primaryEntityManagerFactory",
+        transactionManagerRef = "primaryTransactionManager",
         basePackages = {"de.judgeman.H2SpringFx.Core.Repositories"})
 public class MainRepositoryConfiguration {
+
+    public static final String MODEL_PACKAGE = "de.judgeman.H2SpringFx.Core.Model";
+    public static final String PersistenceUnitName = "primaryPersistenceUnit";
+
+    public static final String DEFAULT_DIALECT = "org.hibernate.dialect.H2Dialect";
+    public static final String PROPERTY_KEY_DIALECT = "hibernate.dialect";
 
     private static LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
@@ -38,20 +44,20 @@ public class MainRepositoryConfiguration {
         return customRoutingDataSource;
     }
 
-    @Bean (name = "mainEntityManager")
+    @Bean (name = "primaryEntityManager")
     public EntityManager entityManager() throws SQLException {
         return entityManagerFactory().createEntityManager();
     }
 
-    @Bean (name = "mainEntityManagerFactory")
+    @Bean (name = "primaryEntityManagerFactory")
     public EntityManagerFactory entityManagerFactory() throws SQLException {
         entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactory.setDataSource(dataSource());
         entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        entityManagerFactory.setPackagesToScan("de.judgeman.H2SpringFx.Model");
-        entityManagerFactory.setPersistenceUnitName("mainPersistenceUnit");
+        entityManagerFactory.setPackagesToScan(MODEL_PACKAGE);
+        entityManagerFactory.setPersistenceUnitName(PersistenceUnitName);
 
-        testSettingDialect("org.hibernate.dialect.H2Dialect"); // default dialect !?
+        testSettingDialect(DEFAULT_DIALECT);
         entityManagerFactory.afterPropertiesSet();
 
         return entityManagerFactory.getObject();
@@ -59,13 +65,13 @@ public class MainRepositoryConfiguration {
 
     public static void testSettingDialect(String dialect) {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.dialect", dialect);
+        properties.setProperty(PROPERTY_KEY_DIALECT, dialect);
 //        properties.setProperty("spring.jpa.hibernate.ddl-auto", "update");
         entityManagerFactory.setJpaProperties(properties);
         entityManagerFactory.afterPropertiesSet();
     }
 
-    @Bean (name = "mainTransactionManager")
+    @Bean (name = "primaryTransactionManager")
     public PlatformTransactionManager transactionManager() throws SQLException {
         return new JpaTransactionManager(entityManagerFactory());
     }

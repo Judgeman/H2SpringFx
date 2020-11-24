@@ -1,6 +1,6 @@
 package de.judgeman.H2SpringFx.Services;
 
-import de.judgeman.H2SpringFx.Model.Todo;
+import de.judgeman.H2SpringFx.Core.Model.Todo;
 import de.judgeman.H2SpringFx.Core.Repositories.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

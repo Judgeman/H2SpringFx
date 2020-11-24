@@ -27,6 +27,10 @@ import javax.sql.DataSource;
         transactionManagerRef = "transactionManager",
         basePackages = {"de.judgeman.H2SpringFx.Setting.Repository"})
 public class SettingRepositoryConfiguration {
+
+    public static final String MODEL_PACKAGE = "de.judgeman.H2SpringFx.Setting.Model";
+    public static final String PersistenceUnitName = "default";
+
     @Autowired
     JpaVendorAdapter jpaVendorAdapter;
 
@@ -44,8 +48,8 @@ public class SettingRepositoryConfiguration {
         LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
         emf.setDataSource(dataSource);
         emf.setJpaVendorAdapter(jpaVendorAdapter);
-        emf.setPackagesToScan("de.judgeman.H2SpringFx");
-        emf.setPersistenceUnitName("default");
+        emf.setPackagesToScan(MODEL_PACKAGE);
+        emf.setPersistenceUnitName(PersistenceUnitName);
         emf.afterPropertiesSet();
         return emf.getObject();
     }
