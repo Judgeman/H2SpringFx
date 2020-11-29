@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 /**
@@ -19,11 +20,11 @@ public class SettingService {
     public static final String NAME_PRIMARY_DATASOURCE = "Primary";
 
     public static final String LANGUAGE_ENTRY_KEY = "currentLanguage";
-    public static final String SETTINGS_DATABASE_INIT_KEY = "settingsDbInit";
     public static final String CURRENT_PRIMARY_DATABASE_CONNECTION_KEY = "currentDatabaseConnection";
 
     @Autowired
     private SettingEntryRepository settingEntryRepository;
+
     @Autowired
     private DatabaseConnectionRepository databaseConnectionRepository;
 

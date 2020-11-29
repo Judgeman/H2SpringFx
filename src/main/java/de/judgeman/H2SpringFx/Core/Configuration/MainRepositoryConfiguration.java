@@ -37,7 +37,7 @@ public class MainRepositoryConfiguration {
 
     public static CustomRoutingDataSource customRoutingDataSource;
 
-    public DataSource dataSource() throws SQLException {
+    public DataSource dataSource() {
         customRoutingDataSource = new CustomRoutingDataSource();
         customRoutingDataSource.setTargetDataSources(customRoutingDataSource.getTargetDataSources());
 

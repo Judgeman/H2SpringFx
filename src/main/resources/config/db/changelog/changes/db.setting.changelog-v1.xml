@@ -1,0 +1,34 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="Paul" id="20201128104930">
+
+        <comment>Initial create for setting db</comment>
+
+        <createTable tableName="DATABASE_CONNECTION">
+            <column name="ID" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_6"/>
+            </column>
+            <column name="DRIVER_CLASS_NAME" type="VARCHAR(255)"/>
+            <column name="JDBC_CONNECTION_PATH" type="VARCHAR(255)"/>
+            <column name="JDBC_CONNECTION_PREFIX" type="VARCHAR(255)"/>
+            <column name="PASSWORD" type="VARCHAR(255)"/>
+            <column name="SQL_DIALECT" type="VARCHAR(255)"/>
+            <column name="USERNAME" type="VARCHAR(255)"/>
+        </createTable>
+
+        <createTable tableName="SETTING_ENTRY">
+            <column name="KEY" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_A"/>
+            </column>
+            <column name="VALUE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

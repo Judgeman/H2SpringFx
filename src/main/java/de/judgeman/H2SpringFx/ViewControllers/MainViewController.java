@@ -6,6 +6,7 @@ import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
+import liquibase.exception.LiquibaseException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,7 @@ public class MainViewController extends BaseViewController {
     }
 
     @FXML
-    public void initialize() throws IOException {
+    public void initialize() throws IOException, LiquibaseException {
         if (!checkForPrimaryDataSource()) {
             showDataSourceSelection();
 
@@ -74,7 +75,7 @@ public class MainViewController extends BaseViewController {
         showTodoView();
     }
 
-    private void initializeCurrentDataSource() {
+    private void initializeCurrentDataSource() throws LiquibaseException {
         String currentDatabaseConnectionId = settingService.loadSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY);
         List<DatabaseConnection> databaseConnections = settingService.getAllDatabaseConnections();
 
