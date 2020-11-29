@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import liquibase.exception.LiquibaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -58,7 +59,7 @@ public class TodoViewController extends BaseViewController {
     private DatabaseConnection currentPrimaryDataConnection;
 
     @FXML
-    private void initialize() {
+    private void initialize() throws LiquibaseException {
         initializeDataSourceDropDown();
         selectLastUsedDataSource();
         updateInputCounter();
@@ -66,7 +67,7 @@ public class TodoViewController extends BaseViewController {
         updateTodoCounter();
     }
 
-    private void selectLastUsedDataSource() {
+    private void selectLastUsedDataSource() throws LiquibaseException {
         String currentDatabaseConnectionId = settingService.loadSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY);
         if (currentDatabaseConnectionId != null) {
             List<DatabaseConnection> databaseConnections = dataSourceDropDown.getItems();
@@ -166,7 +167,7 @@ public class TodoViewController extends BaseViewController {
         return counter;
     }
 
-    public void dataSourceChanged() throws IOException {
+    public void dataSourceChanged() throws IOException, LiquibaseException {
         DatabaseConnection newSelectedDatabaseConnection = dataSourceDropDown.getValue();
         if (newSelectedDatabaseConnection == currentPrimaryDataConnection || newSelectedDatabaseConnection == null) {
             return;
