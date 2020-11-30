@@ -41,7 +41,7 @@ public class SettingsViewController extends BaseViewController {
     private Label setLanguageLabel;
 
     @FXML
-    public void initialize() {
+    private void initialize() {
         initLanguageComboBox();
         selectLastUsedLanguage();
     }
@@ -55,7 +55,8 @@ public class SettingsViewController extends BaseViewController {
         languageComboBox.setItems(FXCollections.observableArrayList(languageService.getAvailableLanguages()));
     }
 
-    public void setNewLanguage() {
+    @FXML
+    private void setNewLanguage() {
         Locale newLanguage = languageComboBox.getValue();
 
         languageService.setNewLanguage(newLanguage);
@@ -67,7 +68,8 @@ public class SettingsViewController extends BaseViewController {
         settingLabel.setText(String.format(languageService.getLocalizationText("setNewLanguage"), newLanguage));
     }
 
-    public void backButtonClicked() throws IOException {
+    @FXML
+    private void backButtonClicked() throws IOException {
         viewService.getMainViewController().showViewBefore();
     }
 

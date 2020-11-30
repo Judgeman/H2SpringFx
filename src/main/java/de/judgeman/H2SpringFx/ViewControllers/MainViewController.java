@@ -63,12 +63,16 @@ public class MainViewController extends BaseViewController {
     }
 
     @FXML
-    public void initialize() throws IOException, LiquibaseException {
+    private void initialize() throws IOException, LiquibaseException {
         if (!checkForPrimaryDataSource()) {
             showDataSourceSelection();
 
             return;
         }
+
+        // TODO: show loading screen and than try to use the datasource (with exception dialog on error)
+        // TODO: if the datasource is not available try to use the next one
+        // TODO: if all datasources not avaible than show the datasource selection view
 
         initializeCurrentDataSource();
         dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);

@@ -124,7 +124,8 @@ public class TodoViewController extends BaseViewController {
         todoListBox.getChildren().remove(checkBox);
     }
 
-    public void newTodoTextFieldKeyTyped() {
+    @FXML
+    private void newTodoTextFieldKeyTyped() {
         updateInputCounter();
     }
 
@@ -167,7 +168,8 @@ public class TodoViewController extends BaseViewController {
         return counter;
     }
 
-    public void dataSourceChanged() throws IOException, LiquibaseException {
+    @FXML
+    private void dataSourceChanged() throws IOException, LiquibaseException {
         DatabaseConnection newSelectedDatabaseConnection = dataSourceDropDown.getValue();
         if (newSelectedDatabaseConnection == currentPrimaryDataConnection || newSelectedDatabaseConnection == null) {
             return;
@@ -178,6 +180,8 @@ public class TodoViewController extends BaseViewController {
             showDataSourceSelection();
             return;
         }
+
+        // TODO: exception handling if datasource is not available
 
         settingService.saveSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY, newSelectedDatabaseConnection.getId());
         currentPrimaryDataConnection = newSelectedDatabaseConnection;
@@ -190,7 +194,8 @@ public class TodoViewController extends BaseViewController {
         viewService.showNewView(ViewService.FILE_PATH_DATASOURCE_SELECTION_VIEW);
     }
 
-    public void deleteDataSource() throws IOException {
+    @FXML
+    private void deleteDataSource() throws IOException {
         String title = languageService.getLocalizationText("todoView.dialog.removeDataSource.title");
         String text = String.format(languageService.getLocalizationText("todoView.dialog.removeDataSource.text"), currentPrimaryDataConnection.getId());
         viewService.showConfirmationDialog(title, text, attributes -> {
@@ -208,7 +213,8 @@ public class TodoViewController extends BaseViewController {
         }
     }
 
-    public void createTodo() throws IOException {
+    @FXML
+    private void createTodo() throws IOException {
         if (isTodoTextValid(newTodoTextField.getText())) {
             Todo newTodo = todoService.saveNewTodo(newTodoTextField.getText());
             newTodoTextField.setText("");
@@ -224,7 +230,8 @@ public class TodoViewController extends BaseViewController {
         }
     }
 
-    public void settingsButtonClicked() throws IOException {
+    @FXML
+    private void settingsButtonClicked() throws IOException {
         showSettingView();
     }
 
@@ -237,7 +244,8 @@ public class TodoViewController extends BaseViewController {
         return !StringUtils.isBlank(text) && text.length() <= MAX_LENGTH_NEW_TODO_INPUT;
     }
 
-    public void addContextMenuToTodoCheckBox(CheckBox checkBox, Todo todo) {
+    @FXML
+    private void addContextMenuToTodoCheckBox(CheckBox checkBox, Todo todo) {
         ContextMenu contextMenu = new ContextMenu();
 
         addEditMenuItem(contextMenu, checkBox, todo);

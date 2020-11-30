@@ -1,6 +1,5 @@
 package de.judgeman.H2SpringFx.ViewControllers;
 
-import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
 import de.judgeman.H2SpringFx.Services.*;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
 import javafx.collections.FXCollections;
@@ -8,19 +7,15 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileUrlResource;
-import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.sql.SQLException;
 
 /**
  * Created by Paul Richter on Thu 03/09/2020
@@ -61,9 +56,27 @@ public class DataSourceSelectionViewController extends BaseViewController {
     private TextField passwordTextField;
     @FXML
     private Button backButton;
+    @FXML
+    private Button chooseFileButton;
+    @FXML
+    private TextField hostTextField;
+    @FXML
+    private TextField portTextField;
+    @FXML
+    private TextField databaseNameTextField;
 
     @FXML
-    public void initialize() {
+    private Label labelDatabaseName;
+    @FXML
+    private Label labelPort;
+    @FXML
+    private Label labelHost;
+    @FXML
+    private Label labelPath;
+
+
+    @FXML
+    private void initialize() {
         fillConnectionTypeComboBox();
         selectFirstConnectionType();
         setVisibilityOfBackButton();
@@ -80,23 +93,34 @@ public class DataSourceSelectionViewController extends BaseViewController {
         }
     }
 
-    // TODO: add inputs for SQL connection
-    // TODO: hide and show all relevant inputs for h2 / sql connection definition
+    @FXML
+    private void saveDatabaseConnection() throws IOException {
+        if (!testConnection(false)) {
+            return;
+        }
 
-    public void saveDatabaseConnection() throws IOException {
+        settingService.saveNewConnection(getDriverClassNameForType(typeComboBox.getValue()),
+                                                                   getDialectForType(typeComboBox.getValue()),
+                                                                   getConnectionPrefix(typeComboBox.getValue()),
+                                                                   getJDBCConnectionPathWithoutPrefix(typeComboBox.getValue()),
+                                                                   nameTextField.getText(),
+                                                                   usernameTextField.getText(),
+                                                                   passwordTextField.getText());
 
-        // TODO: check connection is valid!?
-
-        DatabaseConnection newDatabaseConnection = settingService.saveNewConnection(getDriverClassNameForType(typeComboBox.getValue()),
-                                                                                                getSqlDialectForType(typeComboBox.getValue()),
-                                                                                                getConnectionPrefix(typeComboBox.getValue()),
-                                                                                                pathTextField.getText(),
-                                                                                                nameTextField.getText(),
-                                                                                                usernameTextField.getText(),
-                                                                                                passwordTextField.getText());
+        dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
 
         viewService.registerLastView(ViewService.FILE_PATH_DATASOURCE_SELECTION_VIEW);
         viewService.showNewView(ViewService.FILE_PATH_TODO_VIEW);
+    }
+
+    private String getJDBCConnectionPathWithoutPrefix(String type) {
+        if (type.equals(DATABASE_TYPE_H2)) {
+            return pathTextField.getText();
+        } else if (type.equals(DATABASE_TYPE_SQL)) {
+            return String.format("//%s:%s;databaseName=%s", hostTextField.getText(), portTextField.getText(), databaseNameTextField.getText());
+        }
+
+        return null;
     }
 
     private String getConnectionPrefix(String type) {
@@ -110,52 +134,94 @@ public class DataSourceSelectionViewController extends BaseViewController {
     }
 
     private void fillConnectionTypeComboBox() {
-        // TODO: move this value to connectionService?
         typeComboBox.setItems(FXCollections.observableArrayList(DATABASE_TYPE_H2, DATABASE_TYPE_SQL));
     }
 
-    public void testConnection() {
-        if (!areAllInputsValid()) {
-            // TODO: show information whats wrong
-            return;
-        }
+    @FXML
+    private boolean testConnection() throws IOException {
+        return testConnection(true);
+    }
 
+    private boolean testConnection(boolean showSuccessMessage) throws IOException {
         try {
             DataSource newDataSource = dataSourceService.createNewDataSource(getDriverClassNameForType(typeComboBox.getValue()),
-                                                                             getUrlPath(typeComboBox.getValue(),
-                                                                             pathTextField.getText()),
+                                                                             getFullJDBCUrlPath(typeComboBox.getValue()),
                                                                              usernameTextField.getText(),
                                                                              passwordTextField.getText());
             newDataSource.getConnection().isValid(10);
-            // TODO: check for structure!?
 
-            viewService.showInformationDialog(languageService.getLocalizationText("datasourceSelection.dialog.connectionTest.title"),
-                                              languageService.getLocalizationText("datasourceSelection.dialog.connectionTest.isValid"));
+            if (showSuccessMessage) {
+                viewService.showInformationDialog(languageService.getLocalizationText("datasourceSelection.dialog.connectionTest.title"),
+                                                  languageService.getLocalizationText("datasourceSelection.dialog.connectionTest.isValid"));
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
+            viewService.showInformationDialog(languageService.getLocalizationText("datasourceSelection.dialog.error.title"), ex.getMessage());
+
+            return false;
         }
-    }
 
-    public void backButtonClicked() throws IOException {
-        viewService.getMainViewController().showViewBefore();
-    }
-
-    private boolean areAllInputsValid() {
-        // TODO: check for all inputs
         return true;
     }
 
-    private String getUrlPath(String type, String path) {
+    @FXML
+    private void backButtonClicked() throws IOException {
+        viewService.getMainViewController().showViewBefore();
+    }
+
+    @FXML
+    private void onChangeConnectionType() {
+        String type = typeComboBox.getValue();
+
+        disableAllInputElements();
         if (type.equals(DATABASE_TYPE_H2)) {
-            return String.format("%s%s%s", DATABASE_CONNECTION_PREFIX_H2, path, ";create=false");
+            enableAllRelevantH2InputElements();
         } else if (type.equals(DATABASE_TYPE_SQL)) {
-            return String.format("%s%s", DATABASE_CONNECTION_PREFIX_SQL, path);
+            enableAllRelevantSQLInputElements();
+        }
+    }
+
+    private void disableAllInputElements() {
+        hostTextField.setDisable(true);
+        portTextField.setDisable(true);
+        databaseNameTextField.setDisable(true);
+        pathTextField.setDisable(true);
+        chooseFileButton.setDisable(true);
+
+        labelPath.setDisable(true);
+        labelHost.setDisable(true);
+        labelPort.setDisable(true);
+        labelDatabaseName.setDisable(true);
+    }
+
+    private void enableAllRelevantSQLInputElements() {
+        hostTextField.setDisable(false);
+        portTextField.setDisable(false);
+        databaseNameTextField.setDisable(false);
+
+        labelHost.setDisable(false);
+        labelPort.setDisable(false);
+        labelDatabaseName.setDisable(false);
+    }
+
+    private void enableAllRelevantH2InputElements() {
+        pathTextField.setDisable(false);
+        chooseFileButton.setDisable(false);
+
+        labelPath.setDisable(false);
+    }
+
+    private String getFullJDBCUrlPath(String type) {
+        if (type.equals(DATABASE_TYPE_H2)) {
+            return String.format("%s%s%s", DATABASE_CONNECTION_PREFIX_H2, pathTextField.getText(), ";create=false");
+        } else if (type.equals(DATABASE_TYPE_SQL)) {
+            return String.format("%s//%s:%s;databaseName=%s", DATABASE_CONNECTION_PREFIX_SQL, hostTextField.getText(), portTextField.getText(), databaseNameTextField.getText());
         }
 
         return null;
     }
 
-    private String getSqlDialectForType(String type) {
+    private String getDialectForType(String type) {
         if (type.equals(DATABASE_TYPE_H2)) {
             return DATABASE_SQL_DIALECT_H2;
         } else if (type.equals(DATABASE_TYPE_SQL)) {
@@ -175,26 +241,8 @@ public class DataSourceSelectionViewController extends BaseViewController {
         return null;
     }
 
-    public void createNewH2Database() throws IOException {
-        File directory = viewService.getDirectoryFromUser(languageService.getLocalizationText("datasourceSelection.chooseDirectoryForNewDatabase"));
-        if (directory != null) {
-            if (!directory.isDirectory()) {
-                // TODO: show error message dialog
-            }
-
-            try {
-                String databasePath = createH2DataBasePath(directory);
-                createNewH2DatabaseFile(databasePath);
-
-                // TODO: file out all data in the view
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                viewService.showInformationDialog(languageService.getLocalizationText("datasourceSelection.dialog.error.title"), ex.getMessage());
-            }
-        }
-    }
-
-    public void chooseDatabasePath() {
+    @FXML
+    private void chooseDatabasePath() {
         File directory = viewService.getDirectoryFromUser(languageService.getLocalizationText("datasourceSelection.chooseDirectoryForExistingDatabase"));
         if (directory != null) {
             pathTextField.setText(createH2DataBasePath(directory));
@@ -204,29 +252,5 @@ public class DataSourceSelectionViewController extends BaseViewController {
     private String createH2DataBasePath(File directory) {
         String directoryName = directory.getName();
         return String.format("%s/%s", directory.getAbsolutePath(), directoryName);
-    }
-
-    private void createNewH2DatabaseFile(String databasePath) throws SQLException {
-        // TODO: input for username and password??
-        DataSource dataSource = dataSourceService.createNewDataSource(getDriverClassNameForType(typeComboBox.getValue()),
-                                                                      getUrlPath(typeComboBox.getValue(), databasePath),
-                                                             "SA",
-                                                             "");
-
-        // TODO: ask user for overriding if the file exists already
-
-        URL databaseCreateSchemaUrl = getClass().getClassLoader().getResource("config/databaseSchema_model_create.sql");
-        URL databaseDropSchemaUrl = getClass().getClassLoader().getResource("config/databaseSchema_drop.sql");
-
-        assert databaseCreateSchemaUrl != null;
-        assert databaseDropSchemaUrl != null;
-
-        Resource schemaCreateScript = new FileUrlResource(databaseCreateSchemaUrl);
-        Resource schemaDropScript = new FileUrlResource(databaseDropSchemaUrl);
-
-        ScriptUtils.executeSqlScript(dataSource.getConnection(), schemaDropScript);
-        ScriptUtils.executeSqlScript(dataSource.getConnection(), schemaCreateScript);
-
-        dataSource.getConnection().close();
     }
 }

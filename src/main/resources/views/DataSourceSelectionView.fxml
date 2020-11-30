@@ -31,6 +31,8 @@
                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
@@ -38,41 +40,55 @@
                     </rowConstraints>
                      <children>
                         <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="%datasourceSelection.type" GridPane.halignment="RIGHT" />
-                        <ComboBox fx:id="typeComboBox" prefWidth="150.0" GridPane.columnIndex="2" />
+                        <ComboBox fx:id="typeComboBox" onAction="#onChangeConnectionType" prefWidth="150.0" GridPane.columnIndex="2" />
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                            <children>
-                              <TextField fx:id="pathTextField" maxWidth="300.0" prefWidth="190.0" />
+                              <TextField fx:id="pathTextField" maxWidth="300.0" prefWidth="190.0" promptText="%datasourceSelection.promptText.path" />
                               <Button fx:id="chooseFileButton" maxWidth="100.0" mnemonicParsing="false" onAction="#chooseDatabasePath" text="%datasourceSelection.choosePath" />
                            </children>
                         </HBox>
-                        <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="%datasourceSelection.path" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-                        <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="%datasourceSelection.username" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                        <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="%datasourceSelection.password" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                        <Label fx:id="labelPath" alignment="CENTER_RIGHT" contentDisplay="TOP" text="%datasourceSelection.path" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+                        <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="%datasourceSelection.username" GridPane.halignment="RIGHT" GridPane.rowIndex="5" />
+                        <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="%datasourceSelection.password" GridPane.halignment="RIGHT" GridPane.rowIndex="6" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
                            <children>
-                              <TextField fx:id="usernameTextField" text="SA" />
+                              <TextField fx:id="usernameTextField" promptText="%datasourceSelection.promptText.username" text="SA" />
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                            <children>
-                              <PasswordField fx:id="passwordTextField" />
+                              <PasswordField fx:id="passwordTextField" promptText="%datasourceSelection.promptText.password" />
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="7">
                            <children>
                               <Button fx:id="testConnectionButton" mnemonicParsing="false" onAction="#testConnection" text="%datasourceSelection.testConnection" />
                               <Button fx:id="saveConnectionButton" mnemonicParsing="false" onAction="#saveDatabaseConnection" text="%datasourceSelection.saveConnection" />
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
-                           <children>
-                              <Button fx:id="createDatabaseButton" mnemonicParsing="false" onAction="#createNewH2Database" text="%datasourceSelection.createNewDatabaseFile" />
-                           </children>
-                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="8" />
                         <Label alignment="CENTER_RIGHT" contentDisplay="TOP" text="%datasourceSelection.name" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                            <children>
-                              <TextField fx:id="nameTextField" promptText="Name" />
+                              <TextField fx:id="nameTextField" promptText="%datasourceSelection.promptText.name" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="labelHost" alignment="CENTER_RIGHT" contentDisplay="TOP" disable="true" text="%datasourceSelection.host" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                           <children>
+                              <TextField fx:id="hostTextField" disable="true" promptText="%datasourceSelection.promptText.host" text="localhost" />
+                              <Label fx:id="labelPort" alignment="CENTER_RIGHT" contentDisplay="TOP" disable="true" text="%datasourceSelection.port">
+                                 <padding>
+                                    <Insets left="5.0" right="5.0" />
+                                 </padding>
+                              </Label>
+                              <TextField fx:id="portTextField" disable="true" maxWidth="80.0" promptText="%datasourceSelection.promptText.port" text="1433" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="labelDatabaseName" alignment="CENTER_RIGHT" contentDisplay="TOP" disable="true" text="%datasourceSelection.databaseName" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                           <children>
+                              <TextField fx:id="databaseNameTextField" disable="true" promptText="%datasourceSelection.promptText.databaseName" />
                            </children>
                         </HBox>
                      </children>
