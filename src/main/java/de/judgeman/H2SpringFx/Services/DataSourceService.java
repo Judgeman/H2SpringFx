@@ -70,6 +70,7 @@ public class DataSourceService {
         liquibase.setDatabaseChangeLogLockTable(liquibaseChangeLockTable);
         liquibase.setDatabaseChangeLogTable(liquibaseChangeLogTable);
         liquibase.setDropFirst(false);
+        liquibase.setTestRollbackOnUpdate(true);
         liquibase.setShouldRun(true);
 
         liquibase.afterPropertiesSet();

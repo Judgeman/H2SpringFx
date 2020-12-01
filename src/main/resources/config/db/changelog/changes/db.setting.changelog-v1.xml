@@ -29,6 +29,11 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <rollback>
+            <dropTable tableName="DATABASE_CONNECTION"/>
+            <dropTable tableName="SETTING_ENTRY"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>
