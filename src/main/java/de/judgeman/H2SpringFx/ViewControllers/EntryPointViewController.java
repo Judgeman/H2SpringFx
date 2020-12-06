@@ -6,6 +6,8 @@ import de.judgeman.H2SpringFx.Services.SettingService;
 import de.judgeman.H2SpringFx.Services.ViewService;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.ViewController;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.ContextMenuEvent;
@@ -76,16 +78,6 @@ public class EntryPointViewController extends ViewController {
 
     private void initLanguageComboBox() {
         languageComboBox.setItems(FXCollections.observableArrayList(languageService.getAvailableLanguages()));
-    }
-
-    public void ShowContextMenuOnEmptySpace(ContextMenuEvent event) {
-        ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setImpl_showRelativeToWindow(true);
-
-        MenuItem item1 = new MenuItem("Menu Item 1");
-        contextMenu.getItems().add(item1);
-
-        contextMenu.show(anchorPane, event.getScreenX(), event.getScreenY());
     }
 
     public void saveValue() {
