@@ -43,7 +43,6 @@ public class SettingsViewController extends BaseViewController {
     @FXML
     private void initialize() {
         initLanguageComboBox();
-        selectLastUsedLanguage();
     }
 
     private void selectLastUsedLanguage() {
@@ -78,5 +77,10 @@ public class SettingsViewController extends BaseViewController {
         setLanguageLabel.setText(languageService.getLocalizationText("setLanguage"));
 
         logger.info("Updated text properties with new localization");
+    }
+
+    @Override
+    public void afterViewIsInitialized() {
+        selectLastUsedLanguage();
     }
 }

@@ -1,5 +1,6 @@
 package de.judgeman.H2SpringFx.ViewControllers.Abstract;
 
+import de.judgeman.H2SpringFx.HelperClasses.CallBack;
 import de.judgeman.H2SpringFx.Services.ViewService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -23,13 +24,19 @@ public class BaseDialogController extends BaseViewController {
     protected Label informationLabel;
     @FXML
     protected Button okButton;
+    @FXML
+    protected CallBack callBack;
 
     public void initialize() {
-        Platform.runLater(() -> okButton.requestFocus());
+
+    }
+
+    public void setCallBack(CallBack callBack) {
+        this.callBack = callBack;
     }
 
     public void okButtonClicked() {
-        viewService.dismissDialog();
+        viewService.dismissDialog(callBack);
     }
 
     public void cancelButtonClicked() {
@@ -42,5 +49,10 @@ public class BaseDialogController extends BaseViewController {
 
     public void setInformation(String information) {
         informationLabel.setText(information);
+    }
+
+    @Override
+    public void afterViewIsInitialized() {
+        Platform.runLater(() -> okButton.requestFocus());
     }
 }

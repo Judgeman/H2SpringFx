@@ -1,9 +1,7 @@
 package de.judgeman.H2SpringFx;
 
-import de.judgeman.H2SpringFx.Services.AlertService;
+import de.judgeman.H2SpringFx.Services.*;
 import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
-import de.judgeman.H2SpringFx.Services.LanguageService;
-import de.judgeman.H2SpringFx.Services.ViewService;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,6 +21,7 @@ public class H2SpringFxApplication extends Application {
 
     private LanguageService languageService;
     private ViewService viewService;
+    private DataSourceService dataSourceService;
 
     private Exception exceptionOnStartup;
 
@@ -33,6 +32,7 @@ public class H2SpringFxApplication extends Application {
 
             languageService = springContext.getBean(LanguageService.class);
             viewService = springContext.getBean(ViewService.class);
+            dataSourceService = springContext.getBean(DataSourceService.class);
 
             root = viewService.getRootElementFromFXML(ViewService.FILE_PATH_MAIN_VIEW);
             viewService.registerMainViewController(springContext.getBean(MainViewController.class));
@@ -56,7 +56,15 @@ public class H2SpringFxApplication extends Application {
         viewService.setDefaultStyleCss(primaryStage);
         viewService.restoreScenePositionAndSize(primaryStage);
 
+        dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
+
         primaryStage.show();
+        try {
+            viewService.getMainViewController().showMainView();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            AlertService.showAlert(ex);
+        }
     }
 
     @Override

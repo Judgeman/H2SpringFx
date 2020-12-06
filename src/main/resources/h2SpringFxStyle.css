@@ -3,7 +3,7 @@
 }
 
 .dialogOverlayerBackground {
-    -fx-background-color: rgba(0, 0, 0, 0.5);;
+    -fx-background-color: rgba(0, 0, 0, 0.5);
 }
 
 .dialogBackground {
@@ -50,6 +50,11 @@
     -fx-background-color: #CD3700;
 }
 
+.dialogLoadingCancelButton {
+    -fx-background-color: rgba(0, 0, 0, 0.0);
+    -fx-text-fill: #000000;
+}
+
 .lastDialogButton {
     -fx-background-radius: 0 0 3 3;
 }
@@ -65,6 +70,10 @@
 .dialogBackground {
     -fx-background-radius: 0;
     -fx-background-color: #FFFFFF;
+}
+
+.dialogLoadingTextColor {
+    -fx-text-fill: #000000;
 }
 
 .noShadow {

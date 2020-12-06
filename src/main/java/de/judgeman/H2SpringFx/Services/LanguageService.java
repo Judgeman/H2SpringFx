@@ -3,7 +3,6 @@ package de.judgeman.H2SpringFx.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -38,16 +37,7 @@ public class LanguageService {
     }
 
     public String getLocalizationText(String key) {
-        return tryConvertISOStringInUTF8(currentUsedResourceBundle.getString(key));
-    }
-
-    private String tryConvertISOStringInUTF8(String value) {
-        try {
-            return new String(value.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-        } catch (Exception ex) {
-            // fall back as it is
-            return value;
-        }
+        return currentUsedResourceBundle.getString(key);
     }
 
     public Locale getLastUsedOrDefaultLanguage() {

@@ -1,12 +1,11 @@
 package de.judgeman.H2SpringFx.ViewControllers;
 
-import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
+import de.judgeman.H2SpringFx.HelperClasses.ViewRootAndControllerPair;
 import de.judgeman.H2SpringFx.Services.*;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
-import liquibase.exception.LiquibaseException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,6 +27,8 @@ public class MainViewController extends BaseViewController {
     private SettingService settingService;
     @Autowired
     private DataSourceService dataSourceService;
+    @Autowired
+    private LanguageService languageService;
 
     @FXML
     private Pane contentPane;
@@ -63,33 +64,8 @@ public class MainViewController extends BaseViewController {
     }
 
     @FXML
-    private void initialize() throws IOException, LiquibaseException {
-        if (!checkForPrimaryDataSource()) {
-            showDataSourceSelection();
+    private void initialize() {
 
-            return;
-        }
-
-        // TODO: show loading screen and than try to use the datasource (with exception dialog on error)
-        // TODO: if the datasource is not available try to use the next one
-        // TODO: if all datasources not avaible than show the datasource selection view
-
-        initializeCurrentDataSource();
-        dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
-        showTodoView();
-    }
-
-    private void initializeCurrentDataSource() throws LiquibaseException {
-        String currentDatabaseConnectionId = settingService.loadSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY);
-        List<DatabaseConnection> databaseConnections = settingService.getAllDatabaseConnections();
-
-        DatabaseConnection databaseConnection = settingService.findCurrentDatabaseConnection(currentDatabaseConnectionId, databaseConnections);
-        if (databaseConnection == null) {
-            databaseConnection = databaseConnections.get(0);
-            settingService.saveSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY, databaseConnection.getId());
-        }
-
-        dataSourceService.initializePrimaryDataSource(databaseConnection);
     }
 
     private void showTodoView() throws IOException {
@@ -100,10 +76,12 @@ public class MainViewController extends BaseViewController {
         loadAndShowView(ViewService.FILE_PATH_DATASOURCE_SELECTION_VIEW);
     }
 
-    public void loadAndShowView(String viewPath) throws IOException {
-        Parent root = viewService.getRootElementFromFXML(viewPath);
+    public BaseViewController loadAndShowView(String viewPath) throws IOException {
+        ViewRootAndControllerPair pair = viewService.getRootAndViewControllerFromFXML(viewPath);
         removeLastVisibleView();
-        showNewView(root);
+        showNewView(pair.getRoot());
+        pair.getViewController().afterViewIsInitialized();
+        return pair.getViewController();
     }
 
     private void showNewView(Parent root) {
@@ -130,5 +108,20 @@ public class MainViewController extends BaseViewController {
 
         loadAndShowView(lastViewPath);
         lastViewPath = null;
+    }
+
+    public void showMainView() throws IOException {
+        if (!checkForPrimaryDataSource()) {
+            showDataSourceSelection();
+
+            return;
+        }
+
+        showTodoView();
+    }
+
+    @Override
+    public void afterViewIsInitialized() {
+        // do nothing
     }
 }

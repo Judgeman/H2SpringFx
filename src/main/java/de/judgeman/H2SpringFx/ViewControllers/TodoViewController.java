@@ -7,6 +7,7 @@ import de.judgeman.H2SpringFx.Core.Model.Todo;
 import de.judgeman.H2SpringFx.Services.*;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
 import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.TextInputDialogController;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -59,15 +60,17 @@ public class TodoViewController extends BaseViewController {
     private DatabaseConnection currentPrimaryDataConnection;
 
     @FXML
-    private void initialize() throws LiquibaseException {
+    private void initialize() {
         initializeDataSourceDropDown();
-        selectLastUsedDataSource();
         updateInputCounter();
+    }
+
+    public void tryLoadingData() {
         showData(todoService.loadAllTodos());
         updateTodoCounter();
     }
 
-    private void selectLastUsedDataSource() throws LiquibaseException {
+    public void selectLastUsedDataSourceAndLoadData() throws IOException, LiquibaseException {
         String currentDatabaseConnectionId = settingService.loadSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY);
         if (currentDatabaseConnectionId != null) {
             List<DatabaseConnection> databaseConnections = dataSourceDropDown.getItems();
@@ -78,8 +81,8 @@ public class TodoViewController extends BaseViewController {
             currentPrimaryDataConnection = dataSourceDropDown.getItems().get(0);
         }
 
-        dataSourceService.initializePrimaryDataSource(currentPrimaryDataConnection);
         dataSourceDropDown.setValue(currentPrimaryDataConnection);
+        initializeNewDatasource(currentPrimaryDataConnection);
     }
 
     private void initializeDataSourceDropDown() {
@@ -169,7 +172,7 @@ public class TodoViewController extends BaseViewController {
     }
 
     @FXML
-    private void dataSourceChanged() throws IOException, LiquibaseException {
+    private void dataSourceChanged() throws IOException {
         DatabaseConnection newSelectedDatabaseConnection = dataSourceDropDown.getValue();
         if (newSelectedDatabaseConnection == currentPrimaryDataConnection || newSelectedDatabaseConnection == null) {
             return;
@@ -181,12 +184,34 @@ public class TodoViewController extends BaseViewController {
             return;
         }
 
-        // TODO: exception handling if datasource is not available
+        initializeNewDatasource(newSelectedDatabaseConnection);
+    }
 
-        settingService.saveSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY, newSelectedDatabaseConnection.getId());
-        currentPrimaryDataConnection = newSelectedDatabaseConnection;
-        dataSourceService.initializePrimaryDataSource(newSelectedDatabaseConnection);
-        showData(todoService.loadAllTodos());
+    private void initializeNewDatasource(DatabaseConnection newSelectedDatabaseConnection) throws IOException {
+        viewService.showLoadingDialog(languageService.getLocalizationText("mainView.loadingDialog.text"), attributes -> {
+            try {
+                dataSourceService.initializePrimaryDataSource(newSelectedDatabaseConnection);
+                tryLoadingData();
+
+                settingService.saveSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY, newSelectedDatabaseConnection.getId());
+                currentPrimaryDataConnection = newSelectedDatabaseConnection;
+
+                Platform.runLater(() -> {
+                    viewService.dismissDialog();
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+
+                try {
+                    viewService.showInformationDialog(languageService.getLocalizationText("mainView.loadingData.error.title"),
+                            String.format(languageService.getLocalizationText("mainView.loadingData.error.text"), ex.getMessage()));
+                } catch (IOException iEx) {
+                    iEx.printStackTrace();
+                    AlertService.showAlert(iEx);
+                    System.exit(1);
+                }
+            }
+        });
     }
 
     private void showDataSourceSelection() throws IOException {
@@ -196,13 +221,19 @@ public class TodoViewController extends BaseViewController {
 
     @FXML
     private void deleteDataSource() throws IOException {
+        DatabaseConnection selectedConnection = dataSourceDropDown.getValue();
         String title = languageService.getLocalizationText("todoView.dialog.removeDataSource.title");
-        String text = String.format(languageService.getLocalizationText("todoView.dialog.removeDataSource.text"), currentPrimaryDataConnection.getId());
+        String text = String.format(languageService.getLocalizationText("todoView.dialog.removeDataSource.text"), selectedConnection.getId());
         viewService.showConfirmationDialog(title, text, attributes -> {
-            settingService.deleteConnection(currentPrimaryDataConnection);
-            dataSourceDropDown.getItems().remove(currentPrimaryDataConnection);
-            settingService.deleteSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY);
-            selectFirstDataSource();
+            settingService.deleteConnection(selectedConnection);
+            dataSourceDropDown.getItems().remove(selectedConnection);
+
+            if (currentPrimaryDataConnection == selectedConnection) {
+                settingService.deleteSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY);
+                selectFirstDataSource();
+            } else {
+                dataSourceDropDown.setValue(currentPrimaryDataConnection);
+            }
         });
     }
 
@@ -316,6 +347,19 @@ public class TodoViewController extends BaseViewController {
                 });
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public void afterViewIsInitialized() {
+        Platform.runLater(() -> {
+            try {
+                selectLastUsedDataSourceAndLoadData();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                AlertService.showAlert(ex);
+                System.exit(1);
             }
         });
     }

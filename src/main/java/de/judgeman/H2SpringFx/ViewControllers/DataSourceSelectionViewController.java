@@ -78,8 +78,6 @@ public class DataSourceSelectionViewController extends BaseViewController {
     @FXML
     private void initialize() {
         fillConnectionTypeComboBox();
-        selectFirstConnectionType();
-        setVisibilityOfBackButton();
     }
 
     private void setVisibilityOfBackButton() {
@@ -252,5 +250,11 @@ public class DataSourceSelectionViewController extends BaseViewController {
     private String createH2DataBasePath(File directory) {
         String directoryName = directory.getName();
         return String.format("%s/%s", directory.getAbsolutePath(), directoryName);
+    }
+
+    @Override
+    public void afterViewIsInitialized() {
+        selectFirstConnectionType();
+        setVisibilityOfBackButton();
     }
 }

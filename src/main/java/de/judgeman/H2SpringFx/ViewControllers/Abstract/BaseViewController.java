@@ -5,4 +5,5 @@ package de.judgeman.H2SpringFx.ViewControllers.Abstract;
  */
 public abstract class BaseViewController {
 
+    public abstract void afterViewIsInitialized();
 }

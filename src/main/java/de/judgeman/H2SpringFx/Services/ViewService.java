@@ -5,10 +5,13 @@ import de.judgeman.H2SpringFx.HelperClasses.ViewRootAndControllerPair;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseDialogController;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
 import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.ConfirmDialogController;
+import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.InformationDialogController;
+import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.LoadingDialogController;
 import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.TextInputDialogController;
 import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -32,6 +35,7 @@ public class ViewService {
     public static final String FILE_PATH_SPLASH_SCREEN = "/views/SplashScreen.fxml";
 
     public static final String FILE_PATH_DIALOG_INFORMATION = "/views/dialogViews/InformationDialog.fxml";
+    public static final String FILE_PATH_DIALOG_LOADING = "/views/dialogViews/LoadingDialog.fxml";
     public static final String FILE_PATH_DIALOG_CONFIRMATION = "/views/dialogViews/ConfirmDialog.fxml";
     public static final String FILE_PATH_DIALOG_TEXT_INPUT = "/views/dialogViews/TextInputDialog.fxml";
 
@@ -85,6 +89,7 @@ public class ViewService {
         fxmlLoader.setControllerFactory(springContext::getBean);
 
         Parent root = fxmlLoader.load();
+        assert fxmlLoader.getController() instanceof BaseViewController;
         BaseViewController viewController = fxmlLoader.getController();
 
         return new ViewRootAndControllerPair(root, viewController);
@@ -103,7 +108,21 @@ public class ViewService {
     }
 
     public void showInformationDialog(String title, String information) throws IOException {
-        showDialog(initDialog(title, information, FILE_PATH_DIALOG_INFORMATION).getRoot());
+        showInformationDialog(title, information, null, null);
+    }
+
+    public void showInformationDialog(String title, String information, CallBack callBackAfterShowing, CallBack callBackAfterClosing) throws IOException {
+        ViewRootAndControllerPair pair = initDialog(title, information, FILE_PATH_DIALOG_INFORMATION);
+        ((InformationDialogController) pair.getViewController()).setCallBack(callBackAfterClosing);
+
+        showDialog(pair.getRoot(), callBackAfterShowing);
+    }
+
+    public void showLoadingDialog(String loadingText, CallBack callBackAfterShowing) throws IOException {
+        ViewRootAndControllerPair pair = initDialog(FILE_PATH_DIALOG_LOADING);
+        ((LoadingDialogController) pair.getViewController()).setLoadingText(loadingText);
+
+        showDialog(pair.getRoot(), callBackAfterShowing);
     }
 
     public void showConfirmationDialog(String title, String information, CallBack callBack) throws IOException {
@@ -133,8 +152,12 @@ public class ViewService {
         showDialog(viewRootAndControllerPair.getRoot());
     }
 
+    private ViewRootAndControllerPair initDialog(String dialogFilePath) throws IOException {
+        return getRootAndViewControllerFromFXML(dialogFilePath);
+    }
+
     private ViewRootAndControllerPair initDialog(String title, String information, String dialogFilePath) throws IOException {
-        ViewRootAndControllerPair viewRootAndControllerPair = getRootAndViewControllerFromFXML(dialogFilePath);
+        ViewRootAndControllerPair viewRootAndControllerPair = initDialog(dialogFilePath);
         BaseDialogController dialogController = ((BaseDialogController) viewRootAndControllerPair.getViewController());
 
         dialogController.setTitle(title);
@@ -144,6 +167,10 @@ public class ViewService {
     }
 
     private void showDialog(Parent dialogRoot) {
+        showDialog(dialogRoot, null);
+    }
+
+    private void showDialog(Parent dialogRoot, CallBack callBack) {
         FadeTransition dialogBackgroundFadeInTransition = animationService.createFadeInTransition(mainViewController.getDialogOverLayer());
         FadeTransition dialogRootFadeInTransition = animationService.createFadeInTransition(mainViewController.getGlassPane());
         SequentialTransition bounceTransition = animationService.createBounceInTransition(dialogRoot);
@@ -152,6 +179,12 @@ public class ViewService {
         mainViewController.getGlassPane().setVisible(true);
 
         mainViewController.getGlassPane().getChildren().add(dialogRoot);
+
+        if (callBack != null) {
+            dialogBackgroundFadeInTransition.setOnFinished(event -> {
+                Platform.runLater(callBack::execute);
+            });
+        }
 
         dialogBackgroundFadeInTransition.play();
         dialogRootFadeInTransition.play();
@@ -174,7 +207,7 @@ public class ViewService {
             mainViewController.getGlassPane().getChildren().clear();
 
             if (callBack != null) {
-                callBack.execute();
+                Platform.runLater(callBack::execute);
             }
         });
 
