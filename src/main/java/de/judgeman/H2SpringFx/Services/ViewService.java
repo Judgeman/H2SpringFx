@@ -152,6 +152,14 @@ public class ViewService {
         showDialog(viewRootAndControllerPair.getRoot());
     }
 
+    public void showErrorDialog(Exception ex) throws IOException {
+        showErrorDialog(String.format(languageService.getLocalizationText("dialog.error.default.message"), ex.getMessage()));
+    }
+
+    public void showErrorDialog(String message) throws IOException {
+        showInformationDialog(languageService.getLocalizationText("dialog.error.default.title"), message);
+    }
+
     private ViewRootAndControllerPair initDialog(String dialogFilePath) throws IOException {
         return getRootAndViewControllerFromFXML(dialogFilePath);
     }

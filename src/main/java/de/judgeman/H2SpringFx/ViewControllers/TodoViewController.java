@@ -109,9 +109,19 @@ public class TodoViewController extends BaseViewController {
         checkBox.setText(todo.getText());
         checkBox.setSelected(todo.isDone());
         checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            todo.setDone(newValue);
-            todoService.saveTodo(todo);
-            updateTodoCounter();
+            if (todo.isDone() == newValue) {
+                return;
+            }
+
+            try {
+                todo.setDone(newValue);
+                todoService.saveTodo(todo);
+                updateTodoCounter();
+            } catch (Exception ex) {
+                todo.setDone(oldValue);
+                checkBox.setSelected(oldValue);
+                showError(ex);
+            }
         });
 
         addContextMenuToTodoCheckBox(checkBox, todo);
@@ -204,7 +214,7 @@ public class TodoViewController extends BaseViewController {
 
                 try {
                     viewService.showInformationDialog(languageService.getLocalizationText("mainView.loadingData.error.title"),
-                            String.format(languageService.getLocalizationText("mainView.loadingData.error.text"), ex.getMessage()));
+                                                      String.format(languageService.getLocalizationText("mainView.loadingData.error.text"), ex.getMessage()));
                 } catch (IOException iEx) {
                     iEx.printStackTrace();
                     AlertService.showAlert(iEx);
@@ -247,12 +257,17 @@ public class TodoViewController extends BaseViewController {
     @FXML
     private void createTodo() throws IOException {
         if (isTodoTextValid(newTodoTextField.getText())) {
-            Todo newTodo = todoService.saveNewTodo(newTodoTextField.getText());
-            newTodoTextField.setText("");
-            updateInputCounter();
+            try {
+                Todo newTodo = todoService.saveNewTodo(newTodoTextField.getText());
+                newTodoTextField.setText("");
+                updateInputCounter();
 
-            addNewTodoOnTopOfTheList(newTodo);
-            updateTodoCounter();
+                addNewTodoOnTopOfTheList(newTodo);
+                updateTodoCounter();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                viewService.showErrorDialog(ex);
+            }
         } else {
             String dialogTitle = languageService.getLocalizationText("todoView.textIsNotRight.title");
             String dialogText = String.format(languageService.getLocalizationText("todoView.textIsNotRight.text"), MAX_LENGTH_NEW_TODO_INPUT);
@@ -312,8 +327,21 @@ public class TodoViewController extends BaseViewController {
             checkBox.setText(newText);
 
             todo.setText(newText);
-            todoService.saveTodo(todo);
+            try {
+                todoService.saveTodo(todo);
+            } catch (Exception ex) {
+                showError(ex);
+            }
         };
+    }
+
+    private void showError(Exception ex) {
+        try {
+            viewService.showErrorDialog(ex);
+        } catch (IOException iEx) {
+            iEx.printStackTrace();
+            AlertService.showAlert(iEx);
+        }
     }
 
     private TextInputDialogController.InputValidation createInputValidation() {
@@ -341,14 +369,23 @@ public class TodoViewController extends BaseViewController {
                 String title = languageService.getLocalizationText("todoView.dialog.removeTodo.title");
                 String text = languageService.getLocalizationText("todoView.dialog.removeTodo.text");
                 viewService.showConfirmationDialog(title, text, attributes -> {
-                    todoService.deleteTodo(todo);
-                    removeTodoFromTheList(checkBox);
-                    updateTodoCounter();
+                    deleteTodo(todo, checkBox);
                 });
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    private void deleteTodo(Todo todo, CheckBox checkBox) {
+        try {
+            todoService.deleteTodo(todo);
+            removeTodoFromTheList(checkBox);
+            updateTodoCounter();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showError(ex);
+        }
     }
 
     @Override
