@@ -1,9 +1,11 @@
 package de.judgeman.H2SpringFx.Tests.ServiceTests;
 
 import de.judgeman.H2SpringFx.Services.ViewService;
+import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.Assert;
 import org.junit.experimental.categories.Category;
@@ -76,6 +78,53 @@ public class ViewServiceTests extends GuiTest {
 
             Assert.assertEquals(stage, viewService.getPrimaryStage());
         }, 10 );
+    }
+
+    @Test
+    public void restoreLastScenePositionAndSizeTest() throws Exception {
+        FXTestUtils.invokeAndWait(() -> {
+            // TODO: save last position
+
+            Stage stage = new Stage();
+            viewService.restoreScenePositionAndSize(stage);
+
+            // TODO: assert saved last position on the stage object
+        }, 10 );
+    }
+
+    @Test
+    public void showInformationDialogTest() throws Exception {
+        MainViewController mainViewController = new MainViewController();
+        Pane glassPane = new Pane();
+        Pane overLayerPane = new Pane();
+        mainViewController.setGlassPane(glassPane);
+        mainViewController.setDialogOverLayer(overLayerPane);
+        Assert.assertEquals(0, glassPane.getChildren().size());
+
+        viewService.registerMainViewController(mainViewController);
+        viewService.showInformationDialog("Test", "Test information");
+        Assert.assertEquals(1, glassPane.getChildren().size());
+
+        viewService.dismissDialog(e -> {
+            // TODO: wait for this callBack
+            Assert.assertEquals(0, glassPane.getChildren().size());
+        });
+    }
+
+    @Test
+    public void tryDismissDialogWithoutElementsOnGlassPane() {
+        MainViewController mainViewController = new MainViewController();
+        Pane glassPane = new Pane();
+        Pane overLayerPane = new Pane();
+        mainViewController.setGlassPane(glassPane);
+        mainViewController.setDialogOverLayer(overLayerPane);
+        Assert.assertEquals(0, glassPane.getChildren().size());
+
+        viewService.registerMainViewController(mainViewController);
+        viewService.dismissDialog(e -> {
+            // TODO: wait for this callBack
+            Assert.assertEquals(0, glassPane.getChildren().size());
+        });
     }
 
     @Override

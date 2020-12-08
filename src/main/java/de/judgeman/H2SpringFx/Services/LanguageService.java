@@ -1,5 +1,6 @@
 package de.judgeman.H2SpringFx.Services;
 
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -81,7 +82,12 @@ public class LanguageService {
 
     private ResourceBundle getLastUsedOrDefaultResourceBundle() {
         try {
-            return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, getLastUsedOrDefaultLanguage());
+            Locale lastUsedOrDefaultLanguage = getLastUsedOrDefaultLanguage();
+            if (!getAvailableLanguages().contains(lastUsedOrDefaultLanguage)) {
+                throw new NotFoundException("Language is not supported!");
+            }
+
+            return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, lastUsedOrDefaultLanguage);
         } catch (Exception ex) {
             // ignore
         }
@@ -90,7 +96,7 @@ public class LanguageService {
     }
 
     public ResourceBundle getDefaultResourceBundle() {
-        return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, getLastUsedOrDefaultLanguage());
+        return ResourceBundle.getBundle(LOCALIZATION_BUNDLE_NAME, getDefaultLanguage());
     }
 
     public void setCurrentUsedResourceBundle(ResourceBundle currentUsedResourceBundle) {

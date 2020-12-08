@@ -23,7 +23,7 @@ class LanguageServiceTests {
 	private SettingService settingService;
 
 	@Test
-	public void SaveAndLoadLanguage() {
+	public void SaveAndLoadLanguageTest() {
 		Locale localeToSave = Locale.CANADA;
 		languageService.saveNewLanguageSetting(localeToSave);
 		Locale locale = languageService.getLastUsedOrDefaultLanguage();
@@ -33,7 +33,7 @@ class LanguageServiceTests {
 	}
 
 	@Test
-	public void LoadDefaultLanguage() {
+	public void LoadDefaultLanguageTest() {
 		// delete the saved language
 		// this operation is important because getLastUsedOrDefaultLanguage load the last saved language
 		// from the database if one test persists a new language setting than this test will be failed without this
@@ -69,7 +69,7 @@ class LanguageServiceTests {
 	}
 
 	@Test
-	public void getCurrentUsedResourceBundle() {
+	public void getCurrentUsedResourceBundleTest() {
 		// ---------------------------------
 		// load default resource bundle if no one is set
 		languageService.setCurrentUsedResourceBundle(null);
@@ -90,7 +90,7 @@ class LanguageServiceTests {
 	}
 
 	@Test
-	public void setNewLanguage() {
+	public void setNewLanguageTest() {
 		Locale englishLocal = Locale.US;
 		languageService.setNewLanguage(englishLocal);
 
@@ -103,10 +103,21 @@ class LanguageServiceTests {
 	}
 
 	@Test
-	public void getAvailableLanguages() {
+	public void getAvailableLanguagesTest() {
 		ArrayList<Locale> availableLanguages = languageService.getAvailableLanguages();
 
 		Assert.assertTrue(availableLanguages.contains(Locale.GERMANY));
 		Assert.assertTrue(availableLanguages.contains(Locale.US));
+	}
+
+	@Test
+	public void lastUsedLanguageIsNotExistingTest() {
+		Locale localeToSave = Locale.ITALIAN;
+		languageService.saveNewLanguageSetting(localeToSave);
+
+		languageService.setCurrentUsedResourceBundle(null);
+		ResourceBundle resourceBundle = languageService.getCurrentUsedResourceBundle();
+		Assert.assertNotEquals(localeToSave, resourceBundle.getLocale());
+		Assert.assertEquals(languageService.getDefaultResourceBundle().getLocale(), resourceBundle.getLocale());
 	}
 }
