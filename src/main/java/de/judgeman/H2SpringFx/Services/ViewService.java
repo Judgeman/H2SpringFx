@@ -7,6 +7,9 @@ import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -93,8 +96,13 @@ public class ViewService {
     }
 
     public void showInformationDialog(String title, String information) throws IOException {
+        showInformationDialog(title, information, null);
+    }
+
+    public void showInformationDialog(String title, String information, EventHandler<ActionEvent> callBack) throws IOException {
         ViewRootAndControllerPair viewRootAndControllerPair = getRootAndViewControllerFromFXML(FILE_DIALOG_INFORMATION);
         InformationDialogController informationDialogController = ((InformationDialogController) viewRootAndControllerPair.getViewController());
+        informationDialogController.setCallBack(callBack);
 
         informationDialogController.setTitle(title);
         informationDialogController.setInformation(information);
@@ -117,7 +125,7 @@ public class ViewService {
         bounceTransition.play();
     }
 
-    public void dismissDialog() {
+    public void dismissDialog(EventHandler callBack) {
         dismissRootElementFromGlassPane();
 
         FadeTransition dialogBackgroundPaneFadeOutTransition = animationService.createFadeOutTransition(mainViewController.getDialogOverLayer());
@@ -127,6 +135,10 @@ public class ViewService {
             mainViewController.getGlassPane().setVisible(false);
             mainViewController.getDialogOverLayer().setVisible(false);
             mainViewController.getGlassPane().getChildren().clear();
+
+            if (callBack != null) {
+                callBack.handle(event);
+            }
         });
 
         SequentialTransition sequentialTransition = new SequentialTransition();
@@ -136,7 +148,7 @@ public class ViewService {
 
     private void dismissRootElementFromGlassPane() {
         ObservableList<Node> elementsOnGlassPane = mainViewController.getGlassPane().getChildren();
-        if (elementsOnGlassPane != null && elementsOnGlassPane.size() > 0) {
+        if (elementsOnGlassPane.size() > 0) {
             animationService.createBounceOutTransition(elementsOnGlassPane.get(0)).play();
         }
     }
