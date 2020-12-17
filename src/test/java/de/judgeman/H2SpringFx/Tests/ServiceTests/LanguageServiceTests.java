@@ -90,6 +90,17 @@ class LanguageServiceTests {
 	}
 
 	@Test
+	public void getLastUsedResourceBundleTest() {
+		ResourceBundle defaultResourceBundle = languageService.getDefaultResourceBundle();
+		languageService.saveNewLanguageSetting(defaultResourceBundle.getLocale());
+
+		languageService.setCurrentUsedResourceBundle(null);
+
+		ResourceBundle currentResourceBundle = languageService.getCurrentUsedResourceBundle();
+		Assert.assertEquals(currentResourceBundle, defaultResourceBundle);
+	}
+
+	@Test
 	public void setNewLanguageTest() {
 		Locale englishLocal = Locale.US;
 		languageService.setNewLanguage(englishLocal);

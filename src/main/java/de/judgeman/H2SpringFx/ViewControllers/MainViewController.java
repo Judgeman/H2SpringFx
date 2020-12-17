@@ -46,10 +46,6 @@ public class MainViewController extends ViewController {
         return contentPane;
     }
 
-    public void setContentPane(Pane contentPane) {
-        this.contentPane = contentPane;
-    }
-
     public Pane getDialogOverLayer() {
         return dialogOverLayer;
     }

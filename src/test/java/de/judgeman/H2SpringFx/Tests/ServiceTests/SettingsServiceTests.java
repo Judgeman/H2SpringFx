@@ -15,7 +15,7 @@ public class SettingsServiceTests {
     private SettingService settingService;
 
     @Test
-    public void saveAndLoadSettingTest() {
+    public void saveAndLoadSettingsTest() {
         String key = "SettingService tested";
         String valueToSave = "true";
 
@@ -27,7 +27,7 @@ public class SettingsServiceTests {
     }
 
     @Test
-    public void deleteSettingTest() {
+    public void deleteSettingsTest() {
         String key = "Pauls Dog";
         String value = "Sam";
 
@@ -39,6 +39,15 @@ public class SettingsServiceTests {
         settingService.deleteSetting(key);
 
         valueLoaded = settingService.loadSetting(key);
+        Assert.assertNull(valueLoaded);
+    }
+
+    @Test
+    public void nothingToDeleteSettingsTest() {
+        String keyToDelete = "nothingToDelete";
+        settingService.deleteSetting(keyToDelete);
+
+        String valueLoaded = settingService.loadSetting(keyToDelete);
         Assert.assertNull(valueLoaded);
     }
 }

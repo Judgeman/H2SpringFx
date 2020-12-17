@@ -95,11 +95,11 @@ public class ViewService {
         return primaryStage;
     }
 
-    public void showInformationDialog(String title, String information) throws IOException {
-        showInformationDialog(title, information, null);
+    public ViewRootAndControllerPair showInformationDialog(String title, String information) throws IOException {
+        return showInformationDialog(title, information, null);
     }
 
-    public void showInformationDialog(String title, String information, EventHandler<ActionEvent> callBack) throws IOException {
+    public ViewRootAndControllerPair showInformationDialog(String title, String information, EventHandler<ActionEvent> callBack) throws IOException {
         ViewRootAndControllerPair viewRootAndControllerPair = getRootAndViewControllerFromFXML(FILE_DIALOG_INFORMATION);
         InformationDialogController informationDialogController = ((InformationDialogController) viewRootAndControllerPair.getViewController());
         informationDialogController.setCallBack(callBack);
@@ -108,6 +108,7 @@ public class ViewService {
         informationDialogController.setInformation(information);
 
         showDialog(viewRootAndControllerPair.getRoot());
+        return viewRootAndControllerPair;
     }
 
     private void showDialog(Parent dialogRoot) {

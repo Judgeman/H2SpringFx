@@ -1,6 +1,11 @@
 package de.judgeman.H2SpringFx.Tests.ServiceTests;
 
+import de.judgeman.H2SpringFx.HelperClasses.ViewRootAndControllerPair;
 import de.judgeman.H2SpringFx.Services.ViewService;
+import de.judgeman.H2SpringFx.Tests.HelperClasses.UITestFxApp;
+import de.judgeman.H2SpringFx.Tests.HelperClasses.UITestingService;
+import de.judgeman.H2SpringFx.Tests.ViewControllerTests.EntryPointViewControllerTests;
+import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.InformationDialogController;
 import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import javafx.application.Application;
 import javafx.scene.Parent;
@@ -21,6 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SpringBootTest
 @TestPropertySource(locations="classpath:test.properties")
@@ -33,7 +39,9 @@ public class ViewServiceTests extends GuiTest {
     public static void setupTestGUI() {
         // avoid AWT headless exception
         System.setProperty("java.awt.headless", "false");
-        FXTestUtils.launchApp(TestFxApp.class);
+        if (!UITestFxApp.isAppRunning) {
+            FXTestUtils.launchApp(UITestFxApp.class);
+        }
     }
 
     @Autowired
@@ -94,58 +102,110 @@ public class ViewServiceTests extends GuiTest {
 
     @Test
     public void showInformationDialogTest() throws Exception {
-        MainViewController mainViewController = new MainViewController();
-        Pane glassPane = new Pane();
-        Pane overLayerPane = new Pane();
-        mainViewController.setGlassPane(glassPane);
-        mainViewController.setDialogOverLayer(overLayerPane);
-        Assert.assertEquals(0, glassPane.getChildren().size());
+        AtomicBoolean callBackCalled = new AtomicBoolean(false);
+        FXTestUtils.invokeAndWait(() -> {
 
-        viewService.registerMainViewController(mainViewController);
-        viewService.showInformationDialog("Test", "Test information");
-        Assert.assertEquals(1, glassPane.getChildren().size());
+            MainViewController mainViewController = UITestingService.getNewMainController(viewService);
+            Pane glassPane = mainViewController.getGlassPane();
 
-        viewService.dismissDialog(e -> {
-            // TODO: wait for this callBack
             Assert.assertEquals(0, glassPane.getChildren().size());
-        });
+
+            viewService.registerMainViewController(mainViewController);
+            try {
+                viewService.showInformationDialog("Test", "Test information");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Assert.fail();
+            }
+            Assert.assertEquals(1, glassPane.getChildren().size());
+
+            viewService.dismissDialog(e -> {
+                Assert.assertEquals(0, glassPane.getChildren().size());
+                callBackCalled.set(true);
+            });
+
+            UITestingService.waitForAnimationFinished(5, callBackCalled);
+        }, 10 );
+
+        Assert.assertTrue(callBackCalled.get());
+    }
+
+    @Test
+    public void showInformationDialogAndDismissWithOkButtonTest() throws Exception {
+        AtomicBoolean callBackCalled = new AtomicBoolean(false);
+        FXTestUtils.invokeAndWait(() -> {
+            ViewRootAndControllerPair pair = null;
+            MainViewController mainViewController = UITestingService.getNewMainController(viewService);
+            Pane glassPane = mainViewController.getGlassPane();
+
+            viewService.registerMainViewController(mainViewController);
+            ViewRootAndControllerPair dialogPair = null;
+            try {
+                dialogPair = viewService.showInformationDialog("Test", "Test information");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Assert.fail();
+            }
+
+            Assert.assertEquals(1, glassPane.getChildren().size());
+            Assert.assertTrue(dialogPair.getViewController() instanceof InformationDialogController);
+
+            ((InformationDialogController) dialogPair.getViewController()).setCallBack(event -> {
+                Assert.assertEquals(0, glassPane.getChildren().size());
+                callBackCalled.set(true);
+            });
+
+            ((InformationDialogController) dialogPair.getViewController()).okButtonClicked();
+            UITestingService.waitForAnimationFinished(5, callBackCalled);
+
+        }, 10 );
+
+        Assert.assertTrue(callBackCalled.get());
     }
 
     @Test
     public void tryDismissDialogWithoutElementsOnGlassPane() {
+        AtomicBoolean callBackCalled = new AtomicBoolean(false);
+
+        MainViewController mainViewController = UITestingService.getNewMainController(viewService);
+        Pane glassPane = mainViewController.getGlassPane();
+
+        Assert.assertEquals(0, glassPane.getChildren().size());
+
+        viewService.registerMainViewController(mainViewController);
+        viewService.dismissDialog(e -> {
+            Assert.assertEquals(0, glassPane.getChildren().size());
+            callBackCalled.set(true);
+        });
+
+        UITestingService.waitForAnimationFinished(5, callBackCalled);
+        Assert.assertTrue(callBackCalled.get());
+    }
+
+    @Test
+    public void tryDismissDialogWithoutCallback() {
         MainViewController mainViewController = new MainViewController();
         Pane glassPane = new Pane();
         Pane overLayerPane = new Pane();
         mainViewController.setGlassPane(glassPane);
         mainViewController.setDialogOverLayer(overLayerPane);
-        Assert.assertEquals(0, glassPane.getChildren().size());
-
         viewService.registerMainViewController(mainViewController);
-        viewService.dismissDialog(e -> {
-            // TODO: wait for this callBack
-            Assert.assertEquals(0, glassPane.getChildren().size());
-        });
+
+        try {
+            viewService.showInformationDialog("Test", "Test information");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+        Assert.assertEquals(1, glassPane.getChildren().size());
+
+        viewService.dismissDialog(null);
+        UITestingService.waitForAnimationFinished(1);
+        Assert.assertEquals(0, glassPane.getChildren().size());
     }
 
     @Override
     protected Parent getRootNode() {
         return null;
-    }
-
-    public static class TestFxApp extends Application
-    {
-        private Scene scene = null;
-        private Stage primaryStage = null;
-
-        @Override
-        public void start(Stage primaryStage)
-        {
-            this.primaryStage = primaryStage;
-        }
-
-        public void setRoot(Parent rootNode)
-        {
-            scene.setRoot( rootNode );
-        }
     }
 }

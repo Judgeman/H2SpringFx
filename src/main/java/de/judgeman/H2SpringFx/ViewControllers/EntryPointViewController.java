@@ -89,6 +89,24 @@ public class EntryPointViewController extends ViewController {
         logger.info(String.format("Saved value: %s", value));
     }
 
+    public Locale getSelectedLanguage() {
+        return languageComboBox.getValue();
+    }
+
+    public void setLanguageComboBoxValue(Locale locale) {
+        if (locale == null || languageComboBox.getItems().contains(locale)) {
+            languageComboBox.setValue(locale);
+        }
+    }
+
+    public void setInputValue(String value) {
+        valueInput.setText(value);
+    }
+
+    public String getInputValue() {
+        return valueInput.getText();
+    }
+
     public void loadSavedValue() {
         String testSettingValue = settingService.loadSetting("TestSettingEntry");
         logger.info(String.format("Loaded value: %s", testSettingValue));
@@ -126,6 +144,10 @@ public class EntryPointViewController extends ViewController {
         }
     }
 
+    public void setDialogFeedbackCheckBoxValue(boolean checked) {
+        dialogFeedbackCheckbox.setSelected(checked);
+    }
+
     public void dialogFeedbackCheckBoxChange() {
         if (dialogFeedbackCheckbox.isSelected()) {
             showUserFeedback(languageService.getLocalizationText("changedSettingUseDialogForFeedbackTitle"), languageService.getLocalizationText("changedSettingUseDialogForFeedback"));
@@ -153,5 +175,9 @@ public class EntryPointViewController extends ViewController {
         setLanguageLabel.setText(languageService.getLocalizationText("setLanguage"));
 
         logger.info("Updated text properties with new localization");
+    }
+
+    public String getSettingLabelValue() {
+        return settingLabel.getText();
     }
 }

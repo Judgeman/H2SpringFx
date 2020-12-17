@@ -20,15 +20,7 @@ public class ViewRootAndControllerPair {
         return root;
     }
 
-    public void setRoot(Parent root) {
-        this.root = root;
-    }
-
     public ViewController getViewController() {
         return viewController;
-    }
-
-    public void setViewController(ViewController viewController) {
-        this.viewController = viewController;
     }
 }
