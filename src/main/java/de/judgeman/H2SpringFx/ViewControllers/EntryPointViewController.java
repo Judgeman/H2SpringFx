@@ -6,11 +6,8 @@ import de.judgeman.H2SpringFx.Services.SettingService;
 import de.judgeman.H2SpringFx.Services.ViewService;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.ViewController;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.AnchorPane;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,12 +130,7 @@ public class EntryPointViewController extends ViewController {
 
     private void showUserFeedback(String dialogTitle, String informationText) {
         if (dialogFeedbackCheckbox.isSelected()) {
-            try {
-                viewService.showInformationDialog(dialogTitle, informationText);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                // log and ignore
-            }
+            viewService.showInformationDialog(dialogTitle, informationText);
         } else {
             settingLabel.setText(informationText);
         }

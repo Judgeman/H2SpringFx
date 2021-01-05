@@ -8,7 +8,6 @@ import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.net.URL;
 
 @Service
@@ -72,18 +70,24 @@ public class ViewService {
         stage.getScene().getStylesheets().add(getClass().getResource(FILE_PATH_DEFAULT_STYLE_CSS).toExternalForm());
     }
 
-    public ViewRootAndControllerPair getRootAndViewControllerFromFXML(String fxmlPath) throws IOException {
+    public ViewRootAndControllerPair getRootAndViewControllerFromFXML(String fxmlPath) {
         FXMLLoader fxmlLoader = new FXMLLoader(GetUrlForView(fxmlPath));
         fxmlLoader.setResources(languageService.getCurrentUsedResourceBundle());
         fxmlLoader.setControllerFactory(springContext::getBean);
 
-        Parent root = fxmlLoader.load();
-        ViewController viewController = fxmlLoader.getController();
+        try {
+            Parent root = fxmlLoader.load();
+            ViewController viewController = fxmlLoader.getController();
 
-        return new ViewRootAndControllerPair(root, viewController);
+            return new ViewRootAndControllerPair(root, viewController);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
     }
 
-    public Parent getRootElementFromFXML(String fxmlPath) throws IOException {
+    public Parent getRootElementFromFXML(String fxmlPath) {
         return getRootAndViewControllerFromFXML(fxmlPath).getRoot();
     }
 
@@ -95,11 +99,11 @@ public class ViewService {
         return primaryStage;
     }
 
-    public ViewRootAndControllerPair showInformationDialog(String title, String information) throws IOException {
+    public ViewRootAndControllerPair showInformationDialog(String title, String information) {
         return showInformationDialog(title, information, null);
     }
 
-    public ViewRootAndControllerPair showInformationDialog(String title, String information, EventHandler<ActionEvent> callBack) throws IOException {
+    public ViewRootAndControllerPair showInformationDialog(String title, String information, EventHandler<ActionEvent> callBack) {
         ViewRootAndControllerPair viewRootAndControllerPair = getRootAndViewControllerFromFXML(FILE_DIALOG_INFORMATION);
         InformationDialogController informationDialogController = ((InformationDialogController) viewRootAndControllerPair.getViewController());
         informationDialogController.setCallBack(callBack);

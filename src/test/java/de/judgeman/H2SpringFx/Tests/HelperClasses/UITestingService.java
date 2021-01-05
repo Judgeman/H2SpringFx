@@ -5,7 +5,6 @@ import de.judgeman.H2SpringFx.Services.ViewService;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.ViewController;
 import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UITestingService {
@@ -16,11 +15,7 @@ public class UITestingService {
 
     public static ViewController getViewControllerForFXML(ViewService viewService, String fxmlPath) {
         ViewRootAndControllerPair pair = null;
-        try {
-            pair = viewService.getRootAndViewControllerFromFXML(fxmlPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        pair = viewService.getRootAndViewControllerFromFXML(fxmlPath);
 
         return pair.getViewController();
     }

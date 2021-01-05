@@ -4,16 +4,14 @@ import de.judgeman.H2SpringFx.HelperClasses.ViewRootAndControllerPair;
 import de.judgeman.H2SpringFx.Services.ViewService;
 import de.judgeman.H2SpringFx.Tests.HelperClasses.UITestFxApp;
 import de.judgeman.H2SpringFx.Tests.HelperClasses.UITestingService;
-import de.judgeman.H2SpringFx.Tests.ViewControllerTests.EntryPointViewControllerTests;
 import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.InformationDialogController;
 import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
-import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.junit.Assert;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.loadui.testfx.GuiTest;
@@ -24,7 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestPropertySource;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -53,7 +50,7 @@ public class ViewServiceTests extends GuiTest {
     @Test
     public void loadTestFXMLFileTest() {
         URL url = viewService.GetUrlForView("/TestFXML.fxml");
-        Assert.assertNotNull(url);
+        Assertions.assertNotNull(url);
     }
 
     @Test
@@ -61,20 +58,15 @@ public class ViewServiceTests extends GuiTest {
         FXTestUtils.invokeAndWait(() -> {
             Stage stage = new Stage();
             Scene scene = null;
-            try {
-                scene = new Scene(viewService.getRootElementFromFXML(pathToTestXML));
-            } catch (IOException e) {
-                e.printStackTrace();
-                Assert.fail(e.getMessage());
-            }
+            scene = new Scene(viewService.getRootElementFromFXML(pathToTestXML));
             stage.setScene(scene);
 
-            Assert.assertEquals(0, stage.getScene().getStylesheets().size());
+            Assertions.assertEquals(0, stage.getScene().getStylesheets().size());
             viewService.setDefaultStyleCss(stage);
 
-            Assert.assertEquals(1, stage.getScene().getStylesheets().size());
+            Assertions.assertEquals(1, stage.getScene().getStylesheets().size());
             URL resourceUrl = getClass().getResource(ViewService.FILE_PATH_DEFAULT_STYLE_CSS);
-            Assert.assertEquals(resourceUrl.toString(), stage.getScene().getStylesheets().get(0));
+            Assertions.assertEquals(resourceUrl.toString(), stage.getScene().getStylesheets().get(0));
         }, 10 );
     }
 
@@ -84,7 +76,7 @@ public class ViewServiceTests extends GuiTest {
             Stage stage = new Stage();
             viewService.registerPrimaryStage(stage);
 
-            Assert.assertEquals(stage, viewService.getPrimaryStage());
+            Assertions.assertEquals(stage, viewService.getPrimaryStage());
         }, 10 );
     }
 
@@ -108,26 +100,21 @@ public class ViewServiceTests extends GuiTest {
             MainViewController mainViewController = UITestingService.getNewMainController(viewService);
             Pane glassPane = mainViewController.getGlassPane();
 
-            Assert.assertEquals(0, glassPane.getChildren().size());
+            Assertions.assertEquals(0, glassPane.getChildren().size());
 
             viewService.registerMainViewController(mainViewController);
-            try {
-                viewService.showInformationDialog("Test", "Test information");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Assert.fail();
-            }
-            Assert.assertEquals(1, glassPane.getChildren().size());
+            viewService.showInformationDialog("Test", "Test information");
+            Assertions.assertEquals(1, glassPane.getChildren().size());
 
             viewService.dismissDialog(e -> {
-                Assert.assertEquals(0, glassPane.getChildren().size());
+                Assertions.assertEquals(0, glassPane.getChildren().size());
                 callBackCalled.set(true);
             });
 
             UITestingService.waitForAnimationFinished(5, callBackCalled);
         }, 10 );
 
-        Assert.assertTrue(callBackCalled.get());
+        Assertions.assertTrue(callBackCalled.get());
     }
 
     @Test
@@ -140,18 +127,13 @@ public class ViewServiceTests extends GuiTest {
 
             viewService.registerMainViewController(mainViewController);
             ViewRootAndControllerPair dialogPair = null;
-            try {
-                dialogPair = viewService.showInformationDialog("Test", "Test information");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Assert.fail();
-            }
+            dialogPair = viewService.showInformationDialog("Test", "Test information");
 
-            Assert.assertEquals(1, glassPane.getChildren().size());
-            Assert.assertTrue(dialogPair.getViewController() instanceof InformationDialogController);
+            Assertions.assertEquals(1, glassPane.getChildren().size());
+            Assertions.assertTrue(dialogPair.getViewController() instanceof InformationDialogController);
 
             ((InformationDialogController) dialogPair.getViewController()).setCallBack(event -> {
-                Assert.assertEquals(0, glassPane.getChildren().size());
+                Assertions.assertEquals(0, glassPane.getChildren().size());
                 callBackCalled.set(true);
             });
 
@@ -160,7 +142,7 @@ public class ViewServiceTests extends GuiTest {
 
         }, 10 );
 
-        Assert.assertTrue(callBackCalled.get());
+        Assertions.assertTrue(callBackCalled.get());
     }
 
     @Test
@@ -170,16 +152,16 @@ public class ViewServiceTests extends GuiTest {
         MainViewController mainViewController = UITestingService.getNewMainController(viewService);
         Pane glassPane = mainViewController.getGlassPane();
 
-        Assert.assertEquals(0, glassPane.getChildren().size());
+        Assertions.assertEquals(0, glassPane.getChildren().size());
 
         viewService.registerMainViewController(mainViewController);
         viewService.dismissDialog(e -> {
-            Assert.assertEquals(0, glassPane.getChildren().size());
+            Assertions.assertEquals(0, glassPane.getChildren().size());
             callBackCalled.set(true);
         });
 
         UITestingService.waitForAnimationFinished(5, callBackCalled);
-        Assert.assertTrue(callBackCalled.get());
+        Assertions.assertTrue(callBackCalled.get());
     }
 
     @Test
@@ -191,17 +173,12 @@ public class ViewServiceTests extends GuiTest {
         mainViewController.setDialogOverLayer(overLayerPane);
         viewService.registerMainViewController(mainViewController);
 
-        try {
-            viewService.showInformationDialog("Test", "Test information");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Assert.fail();
-        }
-        Assert.assertEquals(1, glassPane.getChildren().size());
+        viewService.showInformationDialog("Test", "Test information");
+        Assertions.assertEquals(1, glassPane.getChildren().size());
 
         viewService.dismissDialog(null);
         UITestingService.waitForAnimationFinished(1);
-        Assert.assertEquals(0, glassPane.getChildren().size());
+        Assertions.assertEquals(0, glassPane.getChildren().size());
     }
 
     @Override

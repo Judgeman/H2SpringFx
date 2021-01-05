@@ -1,7 +1,7 @@
 package de.judgeman.H2SpringFx.Tests.ServiceTests;
 
 import de.judgeman.H2SpringFx.Services.LogService;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class LogServiceTests {
         String pathOfLastLogFile = getPathOfLastLogfile();
         searchInLastLogFile(pathOfLastLogFile, searchMap);
 
-        Assert.assertSame(searchMap.get(TEST_TEXT_1), 1);
+        Assertions.assertSame(searchMap.get(TEST_TEXT_1), 1);
     }
 
     @Test
@@ -58,9 +58,9 @@ public class LogServiceTests {
         String pathOfLastLogFile = getPathOfLastLogfile();
         searchInLastLogFile(pathOfLastLogFile, searchMap);
 
-        Assert.assertSame(searchMap.get(TEST_TEXT_2), 1);
-        Assert.assertSame(searchMap.get(TEST_TEXT_3), 1);
-        Assert.assertSame(searchMap.get(TEST_TEXT_4), 1);
+        Assertions.assertSame(searchMap.get(TEST_TEXT_2), 1);
+        Assertions.assertSame(searchMap.get(TEST_TEXT_3), 1);
+        Assertions.assertSame(searchMap.get(TEST_TEXT_4), 1);
     }
 
     @Test
@@ -69,19 +69,19 @@ public class LogServiceTests {
 
         String pathOfLastLogFile = getPathOfLastLogfile();
         searchInLastLogFile(pathOfLastLogFile, searchMap);
-        Assert.assertSame(searchMap.get(TEST_TEXT_5), 0);
+        Assertions.assertSame(searchMap.get(TEST_TEXT_5), 0);
 
         LogService.tieSystemOutAndErrToFileLogging();
         System.out.println(TEST_TEXT_5);
 
         searchInLastLogFile(pathOfLastLogFile, searchMap);
-        Assert.assertSame(searchMap.get(TEST_TEXT_5), 1);
+        Assertions.assertSame(searchMap.get(TEST_TEXT_5), 1);
     }
 
     @Test
     public void createNewLogFileAndPrintStreamTest() {
         PrintStream printStream = LogService.createNewLogFileAndPrintStream(TEST_LOG_DIRECTORY, TEST_LOG_FILE_NAME, false);
-        Assert.assertNull(printStream);
+        Assertions.assertNull(printStream);
 
         LogService.printToLogFile(TEST_TEXT_6, true);
 
@@ -91,14 +91,15 @@ public class LogServiceTests {
         try {
             printStream = LogService.createNewLogFileAndPrintStream(TEST_LOG_DIRECTORY, TEST_LOG_FILE_NAME, true);
 
+            assert printStream != null;
             printStream.println(TEST_TEXT_6);
 
             searchInLastLogFile(testLogFile.getPath(), searchMap);
-            Assert.assertSame(searchMap.get(TEST_TEXT_6), 1);
+            Assertions.assertSame(searchMap.get(TEST_TEXT_6), 1);
 
             LogService.printToLogFile(TEST_TEXT_6, true);
             searchInLastLogFile(testLogFile.getPath(), searchMap);
-            Assert.assertSame(searchMap.get(TEST_TEXT_6), 2);
+            Assertions.assertSame(searchMap.get(TEST_TEXT_6), 2);
         } finally {
             if (printStream != null) {
                 printStream.close();
@@ -111,9 +112,10 @@ public class LogServiceTests {
 
     private String getPathOfLastLogfile() {
         File logFolder = new File(PATH_LOG_DIRECTORY);
-        Assert.assertTrue(logFolder.isDirectory());
+        Assertions.assertTrue(logFolder.isDirectory());
 
         File[] files = logFolder.listFiles();
+        assert files != null;
         Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
 
         return files[0].getPath();

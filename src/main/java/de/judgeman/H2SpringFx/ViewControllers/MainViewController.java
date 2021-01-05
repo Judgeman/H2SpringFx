@@ -9,14 +9,12 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
+import org.springframework.stereotype.Controller;
 
 /**
  * Created by Paul Richter on Thu 03/09/2020
  */
-@Component
+@Controller
 public class MainViewController extends ViewController {
 
     private Logger logger = LogService.getLogger(this.getClass());
@@ -55,11 +53,11 @@ public class MainViewController extends ViewController {
     }
 
     @FXML
-    public void initialize() throws IOException {
+    public void initialize() {
         showEntryPointView();
     }
 
-    private void showEntryPointView() throws IOException {
+    private void showEntryPointView() {
         Parent root = viewService.getRootElementFromFXML(ViewService.FILE_PATH_ENTRY_POINT);
         removeLastVisibleView();
         showNewView(root);

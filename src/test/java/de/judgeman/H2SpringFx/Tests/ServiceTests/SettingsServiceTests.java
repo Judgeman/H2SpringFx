@@ -1,7 +1,7 @@
 package de.judgeman.H2SpringFx.Tests.ServiceTests;
 
 import de.judgeman.H2SpringFx.Services.SettingService;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,8 +22,8 @@ public class SettingsServiceTests {
         settingService.saveSetting(key, valueToSave);
 
         String valueLoaded = settingService.loadSetting(key);
-        Assert.assertNotNull(valueLoaded);
-        Assert.assertEquals(valueToSave, valueLoaded);
+        Assertions.assertNotNull(valueLoaded);
+        Assertions.assertEquals(valueToSave, valueLoaded);
     }
 
     @Test
@@ -34,12 +34,12 @@ public class SettingsServiceTests {
         settingService.saveSetting(key, value);
 
         String valueLoaded = settingService.loadSetting(key);
-        Assert.assertNotNull(valueLoaded);
+        Assertions.assertNotNull(valueLoaded);
 
         settingService.deleteSetting(key);
 
         valueLoaded = settingService.loadSetting(key);
-        Assert.assertNull(valueLoaded);
+        Assertions.assertNull(valueLoaded);
     }
 
     @Test
@@ -48,6 +48,6 @@ public class SettingsServiceTests {
         settingService.deleteSetting(keyToDelete);
 
         String valueLoaded = settingService.loadSetting(keyToDelete);
-        Assert.assertNull(valueLoaded);
+        Assertions.assertNull(valueLoaded);
     }
 }

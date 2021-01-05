@@ -27,7 +27,7 @@ public class H2SpringFxApplication extends Application {
     private Exception exceptionOnStartup;
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         try {
             springContext = SpringApplication.run(H2SpringFxApplication.class);
         } catch (Exception ex) {
