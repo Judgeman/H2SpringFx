@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <timestamp key="timestamp-by-second" datePattern="yyyy_MM_dd_HH_mm_ss"/>
+    <!-- use Spring default values -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="Console" class="de.judgeman.H2SpringFx.Appenders.ConsoleAppender">
+        <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="Console"/>
+    </root>
+
+</configuration>

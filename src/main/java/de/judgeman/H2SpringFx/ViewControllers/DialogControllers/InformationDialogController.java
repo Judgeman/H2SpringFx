@@ -1,8 +1,8 @@
 package de.judgeman.H2SpringFx.ViewControllers.DialogControllers;
 
+import de.judgeman.H2SpringFx.HelperClasses.CallBack;
 import de.judgeman.H2SpringFx.Services.ViewService;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.ViewController;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,7 +25,7 @@ public class InformationDialogController extends ViewController {
     @FXML
     private Button okButton;
 
-    private EventHandler callBack;
+    private CallBack callBack;
 
     public void okButtonClicked() {
         viewService.dismissDialog(callBack);
@@ -39,7 +39,7 @@ public class InformationDialogController extends ViewController {
         informationLabel.setText(information);
     }
 
-    public void setCallBack(EventHandler callBack) {
+    public void setCallBack(CallBack callBack) {
         this.callBack = callBack;
     }
 }

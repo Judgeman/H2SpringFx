@@ -20,10 +20,10 @@ public class LogService {
     }
 
     private LogService() {
-
+        // do nothing
     }
 
-    private static final PrintStream logFilePrintStream = createNewLogFileAndPrintStream();
+    private static PrintStream logFilePrintStream = createNewLogFileAndPrintStream();
 
     public static final String LOG_DIRECTORY_NAME = "logs";
     public static final String LOG_NAME_PREFIX = "h2SpringFx_";
@@ -34,10 +34,18 @@ public class LogService {
     }
 
     public static void printToLogFile(String text, boolean breakLine) {
+        if (logFilePrintStream == null) {
+            return;
+        }
+
         logFilePrintStream.print(text);
         if(breakLine) {
             logFilePrintStream.println();
         }
+    }
+
+    public static void setLogFilePrintStream(PrintStream printStream) {
+        logFilePrintStream = printStream;
     }
 
     private static PrintStream createLoggingProxy(final PrintStream realPrintStream) {
@@ -54,14 +62,16 @@ public class LogService {
     }
 
     public static PrintStream createNewLogFileAndPrintStream(String logDirectoryName, String fileName, boolean createDirectoriesToPath) {
-        String logFileName = generateNewLogFilePath(logDirectoryName, fileName);
+        File logsDir = new File("");
+        logsDir = new File(String.format("%s/%s", logsDir.getAbsolutePath(), logDirectoryName));
+
+        String logFileName = generateNewLogFilePath(logsDir.getAbsolutePath(), fileName);
         if (createDirectoriesToPath) {
-            File newLogFile = new File(logFileName);
-            File logsDir = new File(newLogFile.getParent());
             logsDir.mkdirs();
         }
 
         try {
+            System.out.println("New PrintStreamFile: " + logFileName);
             return new PrintStream(new BufferedOutputStream(new FileOutputStream(logFileName)), true);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -69,12 +79,12 @@ public class LogService {
         }
     }
 
-    private static String generateNewFileName() {
+    public static String generateNewFileName() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd__HH_mm_ss");
         return String.format("%s%s%s", LOG_NAME_PREFIX, dateFormat.format(new Date()), ".log");
     }
 
-    private static String generateNewLogFilePath(String logDirectoryName, String fileName) {
+    public static String generateNewLogFilePath(String logDirectoryName, String fileName) {
         return String.format("%s/%s", logDirectoryName, fileName);
     }
 }

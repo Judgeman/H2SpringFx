@@ -54,6 +54,12 @@ public class ViewServiceTests extends GuiTest {
     }
 
     @Test
+    public void loadMissingFXMLFile() {
+        ViewRootAndControllerPair pair = viewService.getRootAndViewControllerFromFXML("/MissingFXML.fxml");
+        Assertions.assertNull(pair);
+    }
+
+    @Test
     public void setStyleToStageTest() throws Exception {
         FXTestUtils.invokeAndWait(() -> {
             Stage stage = new Stage();
@@ -99,8 +105,10 @@ public class ViewServiceTests extends GuiTest {
 
             MainViewController mainViewController = UITestingService.getNewMainController(viewService);
             Pane glassPane = mainViewController.getGlassPane();
+            Pane contentPane = mainViewController.getContentPane();
 
             Assertions.assertEquals(0, glassPane.getChildren().size());
+            Assertions.assertEquals(1, contentPane.getChildren().size());
 
             viewService.registerMainViewController(mainViewController);
             viewService.showInformationDialog("Test", "Test information");

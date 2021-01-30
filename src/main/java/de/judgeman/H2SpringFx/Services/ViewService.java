@@ -1,5 +1,6 @@
 package de.judgeman.H2SpringFx.Services;
 
+import de.judgeman.H2SpringFx.HelperClasses.CallBack;
 import de.judgeman.H2SpringFx.HelperClasses.ViewRootAndControllerPair;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.ViewController;
 import de.judgeman.H2SpringFx.ViewControllers.DialogControllers.InformationDialogController;
@@ -7,8 +8,6 @@ import de.judgeman.H2SpringFx.ViewControllers.MainViewController;
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -103,7 +102,7 @@ public class ViewService {
         return showInformationDialog(title, information, null);
     }
 
-    public ViewRootAndControllerPair showInformationDialog(String title, String information, EventHandler<ActionEvent> callBack) {
+    public ViewRootAndControllerPair showInformationDialog(String title, String information, CallBack callBack) {
         ViewRootAndControllerPair viewRootAndControllerPair = getRootAndViewControllerFromFXML(FILE_DIALOG_INFORMATION);
         InformationDialogController informationDialogController = ((InformationDialogController) viewRootAndControllerPair.getViewController());
         informationDialogController.setCallBack(callBack);
@@ -130,7 +129,7 @@ public class ViewService {
         bounceTransition.play();
     }
 
-    public void dismissDialog(EventHandler callBack) {
+    public void dismissDialog(CallBack callBack) {
         dismissRootElementFromGlassPane();
 
         FadeTransition dialogBackgroundPaneFadeOutTransition = animationService.createFadeOutTransition(mainViewController.getDialogOverLayer());
@@ -142,7 +141,7 @@ public class ViewService {
             mainViewController.getGlassPane().getChildren().clear();
 
             if (callBack != null) {
-                callBack.handle(event);
+                callBack.execute(event);
             }
         });
 
