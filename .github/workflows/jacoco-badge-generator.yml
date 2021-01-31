@@ -1,0 +1,14 @@
+name: jacoco-badge-generator
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+
+jobs:
+  my_job:
+    name: badge generator
+    runs-on: ubuntu-18.04
+    steps:
+      - name: jacoco-badge-generator
+        uses: cicirello/jacoco-badge-generator@v1.0.0

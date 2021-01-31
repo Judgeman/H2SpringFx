@@ -212,14 +212,8 @@ public class TodoViewController extends BaseViewController {
             } catch (Exception ex) {
                 ex.printStackTrace();
 
-                try {
-                    viewService.showInformationDialog(languageService.getLocalizationText("mainView.loadingData.error.title"),
-                                                      String.format(languageService.getLocalizationText("mainView.loadingData.error.text"), ex.getMessage()));
-                } catch (IOException iEx) {
-                    iEx.printStackTrace();
-                    AlertService.showAlert(iEx);
-                    System.exit(1);
-                }
+                viewService.showInformationDialog(languageService.getLocalizationText("mainView.loadingData.error.title"),
+                                                  String.format(languageService.getLocalizationText("mainView.loadingData.error.text"), ex.getMessage()));
             }
         });
     }

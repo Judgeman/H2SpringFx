@@ -2,7 +2,7 @@ package de.judgeman.H2SpringFx.Tests.ServiceTests;
 
 import de.judgeman.H2SpringFx.Services.LanguageService;
 import de.judgeman.H2SpringFx.Services.SettingService;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,8 +28,8 @@ class LanguageServiceTests {
 		languageService.saveNewLanguageSetting(localeToSave);
 		Locale locale = languageService.getLastUsedOrDefaultLanguage();
 
-		Assert.assertEquals(locale.toLanguageTag(), localeToSave.toLanguageTag());
-		Assert.assertNotEquals(locale.toLanguageTag(), languageService.getDefaultLanguage().toLanguageTag());
+		Assertions.assertEquals(locale.toLanguageTag(), localeToSave.toLanguageTag());
+		Assertions.assertNotEquals(locale.toLanguageTag(), languageService.getDefaultLanguage().toLanguageTag());
 	}
 
 	@Test
@@ -45,8 +45,8 @@ class LanguageServiceTests {
 		// load default language if no database entries available
 		Locale loadedLocal = languageService.getLastUsedOrDefaultLanguage();
 
-		Assert.assertEquals(loadedLocal.toLanguageTag(), defaultLanguage.toLanguageTag());
-		Assert.assertEquals(languageService.getDefaultLanguage().toLanguageTag(), defaultLanguage.toLanguageTag());
+		Assertions.assertEquals(loadedLocal.toLanguageTag(), defaultLanguage.toLanguageTag());
+		Assertions.assertEquals(languageService.getDefaultLanguage().toLanguageTag(), defaultLanguage.toLanguageTag());
 
 		// ---------------------------------
 
@@ -56,7 +56,7 @@ class LanguageServiceTests {
 
 		loadedLocal = languageService.getLastUsedOrDefaultLanguage();
 
-		Assert.assertNotEquals(loadedLocal.toLanguageTag(), defaultLanguage.toLanguageTag());
+		Assertions.assertNotEquals(loadedLocal.toLanguageTag(), defaultLanguage.toLanguageTag());
 
 		// ---------------------------------
 
@@ -65,7 +65,7 @@ class LanguageServiceTests {
 		languageService.saveNewLanguageSetting(localeToSave);
 
 		loadedLocal = languageService.getLastUsedOrDefaultLanguage();
-		Assert.assertEquals(loadedLocal.toLanguageTag(), defaultLanguage.toLanguageTag());
+		Assertions.assertEquals(loadedLocal.toLanguageTag(), defaultLanguage.toLanguageTag());
 	}
 
 	@Test
@@ -77,8 +77,8 @@ class LanguageServiceTests {
 		ResourceBundle currentResourceBundle = languageService.getCurrentUsedResourceBundle();
 		ResourceBundle defaultResourceBundle = languageService.getDefaultResourceBundle();
 
-		Assert.assertNotNull(currentResourceBundle);
-		Assert.assertEquals(currentResourceBundle, defaultResourceBundle);
+		Assertions.assertNotNull(currentResourceBundle);
+		Assertions.assertEquals(currentResourceBundle, defaultResourceBundle);
 
 		// ---------------------------------
 		// set other resource bundle
@@ -86,7 +86,18 @@ class LanguageServiceTests {
 		languageService.setCurrentUsedResourceBundle(otherResourceBundle);
 
 		currentResourceBundle = languageService.getCurrentUsedResourceBundle();
-		Assert.assertEquals(currentResourceBundle, otherResourceBundle);
+		Assertions.assertEquals(currentResourceBundle, otherResourceBundle);
+	}
+
+	@Test
+	public void getLastUsedResourceBundleTest() {
+		ResourceBundle defaultResourceBundle = languageService.getDefaultResourceBundle();
+		languageService.saveNewLanguageSetting(defaultResourceBundle.getLocale());
+
+		languageService.setCurrentUsedResourceBundle(null);
+
+		ResourceBundle currentResourceBundle = languageService.getCurrentUsedResourceBundle();
+		Assertions.assertEquals(currentResourceBundle, defaultResourceBundle);
 	}
 
 	@Test
@@ -94,20 +105,20 @@ class LanguageServiceTests {
 		Locale englishLocal = Locale.US;
 		languageService.setNewLanguage(englishLocal);
 
-		Assert.assertEquals("English", languageService.getLocalizationText("setNewLanguageTestValue"));
+		Assertions.assertEquals("English", languageService.getLocalizationText("setNewLanguageTestValue"));
 
 		Locale germanLocal = Locale.GERMANY;
 		languageService.setNewLanguage(germanLocal);
 
-		Assert.assertEquals("Deutsch", languageService.getLocalizationText("setNewLanguageTestValue"));
+		Assertions.assertEquals("Deutsch", languageService.getLocalizationText("setNewLanguageTestValue"));
 	}
 
 	@Test
 	public void getAvailableLanguagesTest() {
 		ArrayList<Locale> availableLanguages = languageService.getAvailableLanguages();
 
-		Assert.assertTrue(availableLanguages.contains(Locale.GERMANY));
-		Assert.assertTrue(availableLanguages.contains(Locale.US));
+		Assertions.assertTrue(availableLanguages.contains(Locale.GERMANY));
+		Assertions.assertTrue(availableLanguages.contains(Locale.US));
 	}
 
 	@Test
@@ -117,7 +128,7 @@ class LanguageServiceTests {
 
 		languageService.setCurrentUsedResourceBundle(null);
 		ResourceBundle resourceBundle = languageService.getCurrentUsedResourceBundle();
-		Assert.assertNotEquals(localeToSave, resourceBundle.getLocale());
-		Assert.assertEquals(languageService.getDefaultResourceBundle().getLocale(), resourceBundle.getLocale());
+		Assertions.assertNotEquals(localeToSave, resourceBundle.getLocale());
+		Assertions.assertEquals(languageService.getDefaultResourceBundle().getLocale(), resourceBundle.getLocale());
 	}
 }

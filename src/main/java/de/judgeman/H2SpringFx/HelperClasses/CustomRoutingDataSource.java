@@ -1,7 +1,6 @@
 package de.judgeman.H2SpringFx.HelperClasses;
 
 import de.judgeman.H2SpringFx.Core.Configuration.MainRepositoryConfiguration;
-import de.judgeman.H2SpringFx.H2SpringFxApplication;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 

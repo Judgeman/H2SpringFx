@@ -83,19 +83,24 @@ public class ViewService {
         stage.getScene().getStylesheets().add(getClass().getResource(FILE_PATH_DEFAULT_STYLE_CSS).toExternalForm());
     }
 
-    public ViewRootAndControllerPair getRootAndViewControllerFromFXML(String fxmlPath) throws IOException {
+    public ViewRootAndControllerPair getRootAndViewControllerFromFXML(String fxmlPath) {
         FXMLLoader fxmlLoader = new FXMLLoader(GetUrlForView(fxmlPath));
         fxmlLoader.setResources(languageService.getCurrentUsedResourceBundle());
         fxmlLoader.setControllerFactory(springContext::getBean);
 
-        Parent root = fxmlLoader.load();
-        assert fxmlLoader.getController() instanceof BaseViewController;
-        BaseViewController viewController = fxmlLoader.getController();
+        try {
+            Parent root = fxmlLoader.load();
+            BaseViewController viewController = fxmlLoader.getController();
 
-        return new ViewRootAndControllerPair(root, viewController);
+            return new ViewRootAndControllerPair(root, viewController);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
     }
 
-    public Parent getRootElementFromFXML(String fxmlPath) throws IOException {
+    public Parent getRootElementFromFXML(String fxmlPath) {
         return getRootAndViewControllerFromFXML(fxmlPath).getRoot();
     }
 
@@ -107,32 +112,35 @@ public class ViewService {
         return primaryStage;
     }
 
-    public void showInformationDialog(String title, String information) throws IOException {
-        showInformationDialog(title, information, null, null);
+    public ViewRootAndControllerPair showInformationDialog(String title, String information) {
+        return showInformationDialog(title, information, null, null);
     }
 
-    public void showInformationDialog(String title, String information, CallBack callBackAfterShowing, CallBack callBackAfterClosing) throws IOException {
+    public ViewRootAndControllerPair showInformationDialog(String title, String information, CallBack callBackAfterShowing, CallBack callBackAfterClosing) {
         ViewRootAndControllerPair pair = initDialog(title, information, FILE_PATH_DIALOG_INFORMATION);
         ((InformationDialogController) pair.getViewController()).setCallBack(callBackAfterClosing);
 
         showDialog(pair.getRoot(), callBackAfterShowing);
+        return pair;
     }
 
-    public void showLoadingDialog(String loadingText, CallBack callBackAfterShowing) throws IOException {
+    public ViewRootAndControllerPair showLoadingDialog(String loadingText, CallBack callBackAfterShowing) throws IOException {
         ViewRootAndControllerPair pair = initDialog(FILE_PATH_DIALOG_LOADING);
         ((LoadingDialogController) pair.getViewController()).setLoadingText(loadingText);
 
         showDialog(pair.getRoot(), callBackAfterShowing);
+        return pair;
     }
 
-    public void showConfirmationDialog(String title, String information, CallBack callBack) throws IOException {
+    public ViewRootAndControllerPair showConfirmationDialog(String title, String information, CallBack callBack) throws IOException {
         ViewRootAndControllerPair viewRootAndControllerPair = initDialog(title, information, FILE_PATH_DIALOG_CONFIRMATION);
         ((ConfirmDialogController) viewRootAndControllerPair.getViewController()).setCallBack(callBack);
 
         showDialog(viewRootAndControllerPair.getRoot());
+        return viewRootAndControllerPair;
     }
 
-    public void showInputDialog(String title,
+    public ViewRootAndControllerPair showInputDialog(String title,
                                 String information,
                                 String initialInputText,
                                 TextInputDialogController.InputValidation validation,
@@ -150,6 +158,7 @@ public class ViewService {
         }
 
         showDialog(viewRootAndControllerPair.getRoot());
+        return viewRootAndControllerPair;
     }
 
     public void showErrorDialog(Exception ex) throws IOException {
@@ -160,11 +169,11 @@ public class ViewService {
         showInformationDialog(languageService.getLocalizationText("dialog.error.default.title"), message);
     }
 
-    private ViewRootAndControllerPair initDialog(String dialogFilePath) throws IOException {
+    private ViewRootAndControllerPair initDialog(String dialogFilePath) {
         return getRootAndViewControllerFromFXML(dialogFilePath);
     }
 
-    private ViewRootAndControllerPair initDialog(String title, String information, String dialogFilePath) throws IOException {
+    private ViewRootAndControllerPair initDialog(String title, String information, String dialogFilePath) {
         ViewRootAndControllerPair viewRootAndControllerPair = initDialog(dialogFilePath);
         BaseDialogController dialogController = ((BaseDialogController) viewRootAndControllerPair.getViewController());
 

@@ -8,14 +8,12 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
+import org.springframework.stereotype.Controller;
 
 /**
  * Created by Paul Richter on Thu 03/09/2020
  */
-@Component
+@Controller
 public class MainViewController extends BaseViewController {
 
     private final Logger logger = LogService.getLogger(this.getClass());
@@ -50,10 +48,6 @@ public class MainViewController extends BaseViewController {
         return contentPane;
     }
 
-    public void setContentPane(Pane contentPane) {
-        this.contentPane = contentPane;
-    }
-
     public Pane getDialogOverLayer() {
         return dialogOverLayer;
     }
@@ -67,15 +61,15 @@ public class MainViewController extends BaseViewController {
 
     }
 
-    private void showTodoView() throws IOException {
+    private void showTodoView() {
         loadAndShowView(ViewService.FILE_PATH_TODO_VIEW);
     }
 
-    private void showDataSourceSelection() throws IOException {
+    private void showDataSourceSelection() {
         loadAndShowView(ViewService.FILE_PATH_DATASOURCE_SELECTION_VIEW);
     }
 
-    public BaseViewController loadAndShowView(String viewPath) throws IOException {
+    public BaseViewController loadAndShowView(String viewPath) {
         ViewRootAndControllerPair pair = viewService.getRootAndViewControllerFromFXML(viewPath);
         removeLastVisibleView();
         showNewView(pair.getRoot());
@@ -99,7 +93,7 @@ public class MainViewController extends BaseViewController {
         this.lastViewPath = lastViewPath;
     }
 
-    public void showViewBefore() throws IOException {
+    public void showViewBefore() {
         if (lastViewPath == null) {
             logger.info("No last view registered");
             return;
@@ -109,7 +103,7 @@ public class MainViewController extends BaseViewController {
         lastViewPath = null;
     }
 
-    public void showMainView() throws IOException {
+    public void showMainView() {
         if (!checkForPrimaryDataSource()) {
             showDataSourceSelection();
 

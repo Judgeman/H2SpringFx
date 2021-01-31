@@ -19,10 +19,14 @@ public class LogService {
         return LoggerFactory.getLogger(clazz);
     }
 
-    private static final PrintStream logFilePrintStream = createNewLogFileAndPrintStream();
+    private LogService() {
+        // do nothing
+    }
 
-    private static final String LOG_DIRECTORY = "logs";
-    private static final String LOG_NAME_PREFIX = "h2SpringFx_";
+    private static PrintStream logFilePrintStream = createNewLogFileAndPrintStream();
+
+    public static final String LOG_DIRECTORY_NAME = "logs";
+    public static final String LOG_NAME_PREFIX = "h2SpringFx_";
 
     public static void tieSystemOutAndErrToFileLogging() {
         System.setOut(createLoggingProxy(System.out));
@@ -30,12 +34,18 @@ public class LogService {
     }
 
     public static void printToLogFile(String text, boolean breakLine) {
-        assert logFilePrintStream != null;
+        if (logFilePrintStream == null) {
+            return;
+        }
 
         logFilePrintStream.print(text);
         if(breakLine) {
             logFilePrintStream.println();
         }
+    }
+
+    public static void setLogFilePrintStream(PrintStream printStream) {
+        logFilePrintStream = printStream;
     }
 
     private static PrintStream createLoggingProxy(final PrintStream realPrintStream) {
@@ -47,13 +57,21 @@ public class LogService {
         };
     }
 
-    private static PrintStream createNewLogFileAndPrintStream() {
-        String logFileName = generateNewLogFileName();
-        File newLogFile = new File(logFileName);
-        File logsDir = new File(newLogFile.getParent());
-        logsDir.mkdirs();
+    public static PrintStream createNewLogFileAndPrintStream() {
+        return createNewLogFileAndPrintStream(LOG_DIRECTORY_NAME, generateNewFileName(), true);
+    }
+
+    public static PrintStream createNewLogFileAndPrintStream(String logDirectoryName, String fileName, boolean createDirectoriesToPath) {
+        File logsDir = new File("");
+        logsDir = new File(String.format("%s/%s", logsDir.getAbsolutePath(), logDirectoryName));
+
+        String logFileName = generateNewLogFilePath(logsDir.getAbsolutePath(), fileName);
+        if (createDirectoriesToPath) {
+            logsDir.mkdirs();
+        }
 
         try {
+            System.out.println("New PrintStreamFile: " + logFileName);
             return new PrintStream(new BufferedOutputStream(new FileOutputStream(logFileName)), true);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -61,8 +79,12 @@ public class LogService {
         }
     }
 
-    private static String generateNewLogFileName() {
+    public static String generateNewFileName() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd__HH_mm_ss");
-        return LOG_DIRECTORY + "/" + LOG_NAME_PREFIX + dateFormat.format(new Date()) + ".log";
+        return String.format("%s%s%s", LOG_NAME_PREFIX, dateFormat.format(new Date()), ".log");
+    }
+
+    public static String generateNewLogFilePath(String logDirectoryName, String fileName) {
+        return String.format("%s/%s", logDirectoryName, fileName);
     }
 }
