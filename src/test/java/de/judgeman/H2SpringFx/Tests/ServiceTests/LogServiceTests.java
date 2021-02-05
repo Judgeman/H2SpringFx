@@ -145,7 +145,6 @@ public class LogServiceTests {
     }
 
     private void searchInLastLogFile(String path, HashMap<String, Integer> searchMap) {
-        System.out.println("search in : " + path);
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader(path));
