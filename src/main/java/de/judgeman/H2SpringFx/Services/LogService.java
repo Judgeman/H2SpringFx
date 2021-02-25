@@ -71,7 +71,6 @@ public class LogService {
         }
 
         try {
-            System.out.println("New PrintStreamFile: " + logFileName);
             return new PrintStream(new BufferedOutputStream(new FileOutputStream(logFileName)), true);
         } catch (Exception ex) {
             ex.printStackTrace();

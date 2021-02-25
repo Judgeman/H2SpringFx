@@ -124,7 +124,7 @@ public class ViewService {
         return pair;
     }
 
-    public ViewRootAndControllerPair showLoadingDialog(String loadingText, CallBack callBackAfterShowing) throws IOException {
+    public ViewRootAndControllerPair showLoadingDialog(String loadingText, CallBack callBackAfterShowing) {
         ViewRootAndControllerPair pair = initDialog(FILE_PATH_DIALOG_LOADING);
         ((LoadingDialogController) pair.getViewController()).setLoadingText(loadingText);
 
@@ -132,7 +132,7 @@ public class ViewService {
         return pair;
     }
 
-    public ViewRootAndControllerPair showConfirmationDialog(String title, String information, CallBack callBack) throws IOException {
+    public ViewRootAndControllerPair showConfirmationDialog(String title, String information, CallBack callBack) {
         ViewRootAndControllerPair viewRootAndControllerPair = initDialog(title, information, FILE_PATH_DIALOG_CONFIRMATION);
         ((ConfirmDialogController) viewRootAndControllerPair.getViewController()).setCallBack(callBack);
 
@@ -161,11 +161,11 @@ public class ViewService {
         return viewRootAndControllerPair;
     }
 
-    public void showErrorDialog(Exception ex) throws IOException {
+    public void showErrorDialog(Exception ex) {
         showErrorDialog(String.format(languageService.getLocalizationText("dialog.error.default.message"), ex.getMessage()));
     }
 
-    public void showErrorDialog(String message) throws IOException {
+    public void showErrorDialog(String message) {
         showInformationDialog(languageService.getLocalizationText("dialog.error.default.title"), message);
     }
 
@@ -255,7 +255,7 @@ public class ViewService {
         getMainViewController().setLastViewPath(filePathToView);
     }
 
-    public void showNewView(String filePathToView) throws IOException {
+    public void showNewView(String filePathToView) {
         getMainViewController().loadAndShowView(filePathToView);
     }
 }

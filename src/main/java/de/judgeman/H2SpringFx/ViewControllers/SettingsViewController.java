@@ -68,7 +68,7 @@ public class SettingsViewController extends BaseViewController {
     }
 
     @FXML
-    private void backButtonClicked() throws IOException {
+    private void backButtonClicked() {
         viewService.getMainViewController().showViewBefore();
     }
 

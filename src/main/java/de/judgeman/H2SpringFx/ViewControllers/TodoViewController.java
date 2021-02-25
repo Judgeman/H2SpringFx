@@ -14,7 +14,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import liquibase.exception.LiquibaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -70,7 +69,7 @@ public class TodoViewController extends BaseViewController {
         updateTodoCounter();
     }
 
-    public void selectLastUsedDataSourceAndLoadData() throws IOException, LiquibaseException {
+    public void selectLastUsedDataSourceAndLoadData() {
         String currentDatabaseConnectionId = settingService.loadSetting(SettingService.CURRENT_PRIMARY_DATABASE_CONNECTION_KEY);
         if (currentDatabaseConnectionId != null) {
             List<DatabaseConnection> databaseConnections = dataSourceDropDown.getItems();
@@ -182,7 +181,7 @@ public class TodoViewController extends BaseViewController {
     }
 
     @FXML
-    private void dataSourceChanged() throws IOException {
+    private void dataSourceChanged() {
         DatabaseConnection newSelectedDatabaseConnection = dataSourceDropDown.getValue();
         if (newSelectedDatabaseConnection == currentPrimaryDataConnection || newSelectedDatabaseConnection == null) {
             return;
@@ -197,7 +196,7 @@ public class TodoViewController extends BaseViewController {
         initializeNewDatasource(newSelectedDatabaseConnection);
     }
 
-    private void initializeNewDatasource(DatabaseConnection newSelectedDatabaseConnection) throws IOException {
+    private void initializeNewDatasource(DatabaseConnection newSelectedDatabaseConnection) {
         viewService.showLoadingDialog(languageService.getLocalizationText("mainView.loadingDialog.text"), attributes -> {
             try {
                 dataSourceService.initializePrimaryDataSource(newSelectedDatabaseConnection);
@@ -218,13 +217,13 @@ public class TodoViewController extends BaseViewController {
         });
     }
 
-    private void showDataSourceSelection() throws IOException {
+    private void showDataSourceSelection() {
         viewService.registerLastView(ViewService.FILE_PATH_TODO_VIEW);
         viewService.showNewView(ViewService.FILE_PATH_DATASOURCE_SELECTION_VIEW);
     }
 
     @FXML
-    private void deleteDataSource() throws IOException {
+    private void deleteDataSource() {
         DatabaseConnection selectedConnection = dataSourceDropDown.getValue();
         String title = languageService.getLocalizationText("todoView.dialog.removeDataSource.title");
         String text = String.format(languageService.getLocalizationText("todoView.dialog.removeDataSource.text"), selectedConnection.getId());
@@ -249,7 +248,7 @@ public class TodoViewController extends BaseViewController {
     }
 
     @FXML
-    private void createTodo() throws IOException {
+    private void createTodo() {
         if (isTodoTextValid(newTodoTextField.getText())) {
             try {
                 Todo newTodo = todoService.saveNewTodo(newTodoTextField.getText());
@@ -275,7 +274,7 @@ public class TodoViewController extends BaseViewController {
         showSettingView();
     }
 
-    private void showSettingView() throws IOException {
+    private void showSettingView() {
         viewService.registerLastView(ViewService.FILE_PATH_TODO_VIEW);
         viewService.showNewView(ViewService.FILE_PATH_SETTINGS_VIEW);
     }
@@ -330,12 +329,7 @@ public class TodoViewController extends BaseViewController {
     }
 
     private void showError(Exception ex) {
-        try {
-            viewService.showErrorDialog(ex);
-        } catch (IOException iEx) {
-            iEx.printStackTrace();
-            AlertService.showAlert(iEx);
-        }
+        viewService.showErrorDialog(ex);
     }
 
     private TextInputDialogController.InputValidation createInputValidation() {
@@ -359,15 +353,11 @@ public class TodoViewController extends BaseViewController {
         contextMenu.getItems().add(item);
 
         item.setOnAction(event -> {
-            try {
-                String title = languageService.getLocalizationText("todoView.dialog.removeTodo.title");
-                String text = languageService.getLocalizationText("todoView.dialog.removeTodo.text");
-                viewService.showConfirmationDialog(title, text, attributes -> {
-                    deleteTodo(todo, checkBox);
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            String title = languageService.getLocalizationText("todoView.dialog.removeTodo.title");
+            String text = languageService.getLocalizationText("todoView.dialog.removeTodo.text");
+            viewService.showConfirmationDialog(title, text, attributes -> {
+                deleteTodo(todo, checkBox);
+            });
         });
     }
 
@@ -384,14 +374,6 @@ public class TodoViewController extends BaseViewController {
 
     @Override
     public void afterViewIsInitialized() {
-        Platform.runLater(() -> {
-            try {
-                selectLastUsedDataSourceAndLoadData();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                AlertService.showAlert(ex);
-                System.exit(1);
-            }
-        });
+        Platform.runLater(this::selectLastUsedDataSourceAndLoadData);
     }
 }

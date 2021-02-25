@@ -92,7 +92,7 @@ public class DataSourceSelectionViewController extends BaseViewController {
     }
 
     @FXML
-    private void saveDatabaseConnection() throws IOException {
+    private void saveDatabaseConnection() {
         if (!testConnection(false)) {
             return;
         }
@@ -136,11 +136,11 @@ public class DataSourceSelectionViewController extends BaseViewController {
     }
 
     @FXML
-    private boolean testConnection() throws IOException {
+    private boolean testConnection() {
         return testConnection(true);
     }
 
-    private boolean testConnection(boolean showSuccessMessage) throws IOException {
+    private boolean testConnection(boolean showSuccessMessage) {
         try {
             DataSource newDataSource = dataSourceService.createNewDataSource(getDriverClassNameForType(typeComboBox.getValue()),
                                                                              getFullJDBCUrlPath(typeComboBox.getValue()),
