@@ -1,6 +1,7 @@
 package de.judgeman.H2SpringFx.Services;
 
 import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
+import de.judgeman.H2SpringFx.Setting.Model.DatabaseType;
 import de.judgeman.H2SpringFx.Setting.Model.SettingEntry;
 import de.judgeman.H2SpringFx.Setting.Repository.DatabaseConnectionRepository;
 import de.judgeman.H2SpringFx.Setting.Repository.SettingEntryRepository;
@@ -73,10 +74,18 @@ public class SettingService {
         return databaseConnections.size() > 0;
     }
 
-    public DatabaseConnection saveNewConnection(String driverClassName, String sqlDialect, String urlPrefix, String urlPath, String name, String username, String password) {
-        DatabaseConnection databaseConnection = new DatabaseConnection();
+    public DatabaseConnection createNewDatabaseConnection(DatabaseType databaseType,
+                                                          String driverClassName,
+                                                          String sqlDialect,
+                                                          String urlPrefix,
+                                                          String urlPath,
+                                                          String name,
+                                                          String username,
+                                                          String password) {
+        DatabaseConnection databaseConnection = databaseConnectionRepository.findById(name).orElse(new DatabaseConnection());
 
         databaseConnection.setId(name);
+        databaseConnection.setDatabaseType(databaseType);
         databaseConnection.setDriverClassName(driverClassName);
         databaseConnection.setSqlDialect(sqlDialect);
         databaseConnection.setJdbcConnectionPrefix(urlPrefix);
@@ -84,9 +93,11 @@ public class SettingService {
         databaseConnection.setUsername(username);
         databaseConnection.setPassword(password);
 
-        databaseConnectionRepository.save(databaseConnection);
-
         return databaseConnection;
+    }
+
+    public void saveNewConnection(DatabaseConnection databaseConnection) {
+        databaseConnectionRepository.save(databaseConnection);
     }
 
     public DatabaseConnection findCurrentDatabaseConnection(String currentDatabaseConnectionId, List<DatabaseConnection> allDatabaseConnections) {

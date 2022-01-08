@@ -13,6 +13,7 @@
             <column name="ID" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_6"/>
             </column>
+            <column name="DATABASE_TYPE" type="VARCHAR(255)"/>
             <column name="DRIVER_CLASS_NAME" type="VARCHAR(255)"/>
             <column name="JDBC_CONNECTION_PATH" type="VARCHAR(255)"/>
             <column name="JDBC_CONNECTION_PREFIX" type="VARCHAR(255)"/>

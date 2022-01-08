@@ -1,6 +1,8 @@
 package de.judgeman.H2SpringFx.ViewControllers;
 
 import de.judgeman.H2SpringFx.Services.*;
+import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
+import de.judgeman.H2SpringFx.Setting.Model.DatabaseType;
 import de.judgeman.H2SpringFx.ViewControllers.Abstract.BaseViewController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -23,15 +26,19 @@ import java.io.IOException;
 @Component
 public class DataSourceSelectionViewController extends BaseViewController {
 
-    private static final String DATABASE_TYPE_H2 = "H2";
-    private static final String DATABASE_SQL_DIALECT_H2 = "org.hibernate.dialect.H2Dialect";
-    private static final String DATABASE_DRIVER_CLASSNAME_H2 = "org.h2.Driver";
-    private static final String DATABASE_CONNECTION_PREFIX_H2 = "jdbc:h2:file:";
+    @Value("${database.selection.sql_dialect.h2}")
+    private String DATABASE_SQL_DIALECT_H2;
+    @Value("${database.selection.driver.h2}")
+    private String DATABASE_DRIVER_CLASSNAME_H2;
+    @Value("${database.selection.connection_prefix.h2}")
+    private String DATABASE_CONNECTION_PREFIX_H2;
 
-    private static final String DATABASE_TYPE_SQL = "SQL";
-    private static final String DATABASE_SQL_DIALECT_SQL = "org.hibernate.dialect.SQLServerDialect";
-    private static final String DATABASE_DRIVER_CLASSNAME_SQL = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private static final String DATABASE_CONNECTION_PREFIX_SQL = "jdbc:sqlserver:";
+    @Value("${database.selection.sql_dialect.sql}")
+    private String DATABASE_SQL_DIALECT_SQL;
+    @Value("${database.selection.driver.sql}")
+    private String DATABASE_DRIVER_CLASSNAME_SQL;
+    @Value("${database.selection.connection_prefix.sql}")
+    private String DATABASE_CONNECTION_PREFIX_SQL;
 
     private final Logger logger = LogService.getLogger(this.getClass());
 
@@ -45,7 +52,7 @@ public class DataSourceSelectionViewController extends BaseViewController {
     private SettingService settingService;
 
     @FXML
-    private ComboBox<String> typeComboBox;
+    private ComboBox<DatabaseType> typeComboBox;
     @FXML
     private TextField pathTextField;
     @FXML
@@ -85,7 +92,7 @@ public class DataSourceSelectionViewController extends BaseViewController {
     }
 
     private void selectFirstConnectionType() {
-        ObservableList<String> comboBoxItems = typeComboBox.getItems();
+        ObservableList<DatabaseType> comboBoxItems = typeComboBox.getItems();
         if (comboBoxItems != null && comboBoxItems.size() > 0) {
             typeComboBox.setValue(comboBoxItems.get(0));
         }
@@ -97,13 +104,14 @@ public class DataSourceSelectionViewController extends BaseViewController {
             return;
         }
 
-        settingService.saveNewConnection(getDriverClassNameForType(typeComboBox.getValue()),
+        settingService.saveNewConnection(settingService.createNewDatabaseConnection(typeComboBox.getValue(),
+                                                                   getDriverClassNameForType(typeComboBox.getValue()),
                                                                    getDialectForType(typeComboBox.getValue()),
                                                                    getConnectionPrefix(typeComboBox.getValue()),
                                                                    getJDBCConnectionPathWithoutPrefix(typeComboBox.getValue()),
                                                                    nameTextField.getText(),
                                                                    usernameTextField.getText(),
-                                                                   passwordTextField.getText());
+                                                                   passwordTextField.getText()));
 
         dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
 
@@ -111,28 +119,30 @@ public class DataSourceSelectionViewController extends BaseViewController {
         viewService.showNewView(ViewService.FILE_PATH_TODO_VIEW);
     }
 
-    private String getJDBCConnectionPathWithoutPrefix(String type) {
-        if (type.equals(DATABASE_TYPE_H2)) {
-            return pathTextField.getText();
-        } else if (type.equals(DATABASE_TYPE_SQL)) {
-            return String.format("//%s:%s;databaseName=%s", hostTextField.getText(), portTextField.getText(), databaseNameTextField.getText());
+    private String getJDBCConnectionPathWithoutPrefix(DatabaseType type) {
+        switch (type) {
+            case H2:
+                return pathTextField.getText();
+            case Sql:
+                return String.format("//%s:%s;databaseName=%s", hostTextField.getText(), portTextField.getText(), databaseNameTextField.getText());
         }
 
         return null;
     }
 
-    private String getConnectionPrefix(String type) {
-        if (type.equals(DATABASE_TYPE_H2)) {
-            return DATABASE_CONNECTION_PREFIX_H2;
-        } else if (type.equals(DATABASE_TYPE_SQL)) {
-            return DATABASE_CONNECTION_PREFIX_SQL;
+    private String getConnectionPrefix(DatabaseType type) {
+        switch (type) {
+            case H2:
+                return DATABASE_CONNECTION_PREFIX_H2;
+            case Sql:
+                return DATABASE_CONNECTION_PREFIX_SQL;
         }
 
         return null;
     }
 
     private void fillConnectionTypeComboBox() {
-        typeComboBox.setItems(FXCollections.observableArrayList(DATABASE_TYPE_H2, DATABASE_TYPE_SQL));
+        typeComboBox.setItems(FXCollections.observableArrayList(DatabaseType.H2, DatabaseType.Sql));
     }
 
     @FXML
@@ -169,13 +179,17 @@ public class DataSourceSelectionViewController extends BaseViewController {
 
     @FXML
     private void onChangeConnectionType() {
-        String type = typeComboBox.getValue();
+        DatabaseType type = typeComboBox.getValue();
 
         disableAllInputElements();
-        if (type.equals(DATABASE_TYPE_H2)) {
-            enableAllRelevantH2InputElements();
-        } else if (type.equals(DATABASE_TYPE_SQL)) {
-            enableAllRelevantSQLInputElements();
+
+        switch (type) {
+            case H2:
+                enableAllRelevantH2InputElements();
+                break;
+            case Sql:
+                enableAllRelevantSQLInputElements();
+                break;
         }
     }
 
@@ -209,31 +223,34 @@ public class DataSourceSelectionViewController extends BaseViewController {
         labelPath.setDisable(false);
     }
 
-    private String getFullJDBCUrlPath(String type) {
-        if (type.equals(DATABASE_TYPE_H2)) {
-            return String.format("%s%s%s", DATABASE_CONNECTION_PREFIX_H2, pathTextField.getText(), ";create=false");
-        } else if (type.equals(DATABASE_TYPE_SQL)) {
-            return String.format("%s//%s:%s;databaseName=%s", DATABASE_CONNECTION_PREFIX_SQL, hostTextField.getText(), portTextField.getText(), databaseNameTextField.getText());
+    private String getFullJDBCUrlPath(DatabaseType type) {
+        switch (type) {
+            case H2:
+                return String.format("%s%s%s", DATABASE_CONNECTION_PREFIX_H2, pathTextField.getText(), ";create=false");
+            case Sql:
+                return String.format("%s//%s:%s;databaseName=%s", DATABASE_CONNECTION_PREFIX_SQL, hostTextField.getText(), portTextField.getText(), databaseNameTextField.getText());
         }
 
         return null;
     }
 
-    private String getDialectForType(String type) {
-        if (type.equals(DATABASE_TYPE_H2)) {
-            return DATABASE_SQL_DIALECT_H2;
-        } else if (type.equals(DATABASE_TYPE_SQL)) {
-            return DATABASE_SQL_DIALECT_SQL;
+    private String getDialectForType(DatabaseType type) {
+        switch (type) {
+            case H2:
+                return DATABASE_SQL_DIALECT_H2;
+            case Sql:
+                return DATABASE_SQL_DIALECT_SQL;
         }
 
         return null;
     }
 
-    private String getDriverClassNameForType(String type) {
-        if (type.equals(DATABASE_TYPE_H2)) {
-            return DATABASE_DRIVER_CLASSNAME_H2;
-        } else if (type.equals(DATABASE_TYPE_SQL)) {
-            return DATABASE_DRIVER_CLASSNAME_SQL;
+    private String getDriverClassNameForType(DatabaseType type) {
+        switch (type) {
+            case H2:
+                return DATABASE_DRIVER_CLASSNAME_H2;
+            case Sql:
+                return DATABASE_DRIVER_CLASSNAME_SQL;
         }
 
         return null;

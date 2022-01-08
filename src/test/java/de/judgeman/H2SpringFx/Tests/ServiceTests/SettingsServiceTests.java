@@ -2,6 +2,7 @@ package de.judgeman.H2SpringFx.Tests.ServiceTests;
 
 import de.judgeman.H2SpringFx.Services.SettingService;
 import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
+import de.judgeman.H2SpringFx.Setting.Model.DatabaseType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,8 @@ public class SettingsServiceTests {
     public void databaseConnectionsSavingAndDeletingAndChecking() {
         Assertions.assertFalse(settingService.existAnyDatabaseConnections());
 
-        DatabaseConnection databaseConnection = settingService.saveNewConnection("org.h2.Driver", "org.hibernate.dialect.H2Dialect", "jdbc:h2:", "mem:primary", "TestDatabase", "SA", "Nummer!22");
+        DatabaseConnection databaseConnection = settingService.createNewDatabaseConnection(DatabaseType.H2, "org.h2.Driver", "org.hibernate.dialect.H2Dialect", "jdbc:h2:", "mem:primary", "TestDatabase", "SA", "Nummer!22");
+        settingService.saveNewConnection(databaseConnection);
         Assertions.assertNotNull(databaseConnection);
 
         Assertions.assertTrue(settingService.existAnyDatabaseConnections());
@@ -69,11 +71,12 @@ public class SettingsServiceTests {
 
     @Test
     public void getDatabaseConnection() {
-        settingService.saveNewConnection("org.h2.Driver", "org.hibernate.dialect.H2Dialect", "jdbc:h2:", "mem:primary", "TestDatabase", "SA", "Nummer!22");
+        DatabaseConnection databaseConnection = settingService.createNewDatabaseConnection(DatabaseType.H2, "org.h2.Driver", "org.hibernate.dialect.H2Dialect", "jdbc:h2:", "mem:primary", "TestDatabase", "SA", "Nummer!22");
+        settingService.saveNewConnection(databaseConnection);
         Assertions.assertTrue(settingService.existAnyDatabaseConnections());
 
-        DatabaseConnection databaseConnection = settingService.getDatabaseConnection("TestDatabase");
-        Assertions.assertNotNull(databaseConnection);
+        DatabaseConnection newDatabaseConnection = settingService.getDatabaseConnection("TestDatabase");
+        Assertions.assertNotNull(newDatabaseConnection);
     }
 
     @Test

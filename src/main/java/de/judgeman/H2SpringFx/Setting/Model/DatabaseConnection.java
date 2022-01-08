@@ -12,6 +12,10 @@ public class DatabaseConnection {
     @Column
     private String id;
 
+    @Column (name = "DATABASE_TYPE")
+    @Enumerated(EnumType.STRING)
+    private DatabaseType databaseType;
+
     @Column (name = "DRIVER_CLASS_NAME")
     private String driverClassName;
 
@@ -84,6 +88,14 @@ public class DatabaseConnection {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public DatabaseType getDatabaseType() {
+        return databaseType;
+    }
+
+    public void setDatabaseType(DatabaseType databaseType) {
+        this.databaseType = databaseType;
     }
 
     @Override

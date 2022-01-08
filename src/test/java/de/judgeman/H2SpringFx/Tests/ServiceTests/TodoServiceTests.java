@@ -5,6 +5,7 @@ import de.judgeman.H2SpringFx.Services.DataSourceService;
 import de.judgeman.H2SpringFx.Services.SettingService;
 import de.judgeman.H2SpringFx.Services.TodoService;
 import de.judgeman.H2SpringFx.Setting.Model.DatabaseConnection;
+import de.judgeman.H2SpringFx.Setting.Model.DatabaseType;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,13 +30,15 @@ public class TodoServiceTests {
     private DataSourceService dataSourceService;
 
     public void initTestDatabase() throws LiquibaseException {
-        DatabaseConnection databaseConnection = settingService.saveNewConnection("org.h2.Driver",
-                                                                                "org.hibernate.dialect.H2Dialect",
-                                                                                "jdbc:h2:",
-                                                                                "mem:primary;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
-                                                                                "TestDatabase",
-                                                                                "SA",
-                                                                                "Nummer!22");
+        DatabaseConnection databaseConnection = settingService.createNewDatabaseConnection(DatabaseType.H2,
+                                                                                           "org.h2.Driver",
+                                                                                           "org.hibernate.dialect.H2Dialect",
+                                                                                           "jdbc:h2:",
+                                                                                           "mem:primary;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+                                                                                           "TestDatabase",
+                                                                                           "SA",
+                                                                                           "Nummer!22");
+        settingService.saveNewConnection(databaseConnection);
         dataSourceService.initializePrimaryDataSource(databaseConnection);
         dataSourceService.setCurrentDataSourceName(SettingService.NAME_PRIMARY_DATASOURCE);
     }
